@@ -1,0 +1,17 @@
+name: Trivy Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * 5'
+  workflow_dispatch:
+
+jobs:
+  trivy-scan-latest:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-trivy.yml@main
+    with:
+      image-name: enshrouded-server
+  trivy-scan-dev:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-trivy.yml@main
+    with:
+      image-name: enshrouded-server
+      image-tag: dev

@@ -1,0 +1,40 @@
+name: 🐛 Bug report
+description: Report a bug in enshrouded-server to help us fix it
+labels: [ "bug 🐞" ]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search existing issues to avoid creating duplicates.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: input
+    attributes:
+      label: Used image version
+      description: What version of the image, are you currently using? If you use latest tag, pls provide also the sha256 hash.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Used docker compose file or docker command
+      description: |
+        Pls remove any sensitive information from the file or command.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: What you expected to see, versus what you actually saw
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Logs from the container
+      description: If possible, include logs from the container. You can get these with `docker compose logs` or `docker logs`.
+    validations:
+      required: false

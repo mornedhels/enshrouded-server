@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .github/**
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: CI-${{ github.ref }}
+
+jobs:
+  build-wine-stable:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
+    with:
+      image-name: enshrouded-server
+      image-tag: dev
+    secrets:
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+  build-wine-staging:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
+    with:
+      image-name: enshrouded-server
+      image-tag: dev-wine-staging
+      build-args: |
+        WINE_BRANCH=staging
+      trivy-scan: false
+    secrets:
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}

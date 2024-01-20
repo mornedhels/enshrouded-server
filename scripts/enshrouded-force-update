@@ -1,0 +1,11 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+main() {
+  info "Force Enshrouded update"
+  rm $version_file_path
+  supervisorctl start enshrouded-updater
+}
+
+main

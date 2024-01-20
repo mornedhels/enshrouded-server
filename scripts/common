@@ -1,0 +1,118 @@
+#!/bin/bash
+install_path=/opt/enshrouded/server
+version_file_path=/opt/enshrouded/current_version
+steamcmd_path=/usr/bin/steamcmd
+saves_path=$install_path/savegame
+logs_path=$install_path/logs
+steam_app_id=2278520
+enshrouded_binary_path=enshrouded_server.exe
+
+# trap SIGUSR1 as it is being used to check
+# for process aliveness when an existing
+# pidfile is found
+trap ':' USR1
+
+# Collection of PID files
+enshrouded_server_pidfile=/var/run/enshrouded/enshrouded-server.pid
+enshrouded_updater_pidfile=/var/run/enshrouded/enshrouded-updater.pid
+
+# Syslog supervisor config file
+supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
+
+# WINE
+WINEPREFIX=/home/enshrouded/
+WINEARCH=win64
+WINEPATH=$install_path
+
+# log levels
+debug=50
+info=40
+warn=30
+error=20
+critical=10
+fatal=5
+log_level=${log_level:-$info}
+
+debug() { logstd $debug "DEBUG - [$$] - $*"; }
+info() { logstd $info "INFO - $*"; }
+warn() { logstd $warn "WARN - $*"; }
+error() { logerr $error "ERROR - $*"; }
+critical() { logerr $critical "CRITIAL - $*"; }
+fatal() {
+  logerr $fatal "FATAL - $*"
+  exit 1
+}
+
+logstd() {
+  local log_at_level
+  log_at_level="$1"
+  shift
+  printline "$log_at_level" "$*"
+}
+
+logerr() {
+  local log_at_level
+  log_at_level="$1"
+  shift
+  printline "$log_at_level" "$*" >&2
+}
+
+printline() {
+  local log_at_level
+  local log_data
+  log_at_level="$1"
+  shift
+  log_data="$*"
+
+  if [ "$log_at_level" -le "$log_level" ]; then
+    echo "$log_data"
+  fi
+}
+
+check_lock() {
+  local pidfile
+  local predecessor_pid
+  local numre
+  pidfile=$1
+  predecessor_pid=$(<"$pidfile")
+  numre='^[0-9]+$'
+  if [[ "$predecessor_pid" =~ $numre ]]; then
+    debug "Sending SIGUSR1 to PID $predecessor_pid"
+    if kill -USR1 "$predecessor_pid" &>/dev/null; then
+      fatal "Process with PID $predecessor_pid already running - exiting"
+    else
+      info "Removing stale PID file and starting run"
+      clear_lock_and_run "$pidfile"
+    fi
+  else
+    warn "Predecessor PID is corrupt - clearing lock and running"
+    clear_lock_and_run "$pidfile"
+  fi
+}
+
+clear_lock_and_run() {
+  local pidfile
+  pidfile=$1
+  clear_lock "$pidfile"
+  main
+}
+
+clear_lock() {
+  local pidfile
+  pidfile=$1
+  info "Releasing PID file $pidfile"
+  kill -SIGTERM $pidfile 2>/dev/null
+  rm -f "$1"
+}
+
+check_running() {
+  local proc
+  local status
+  proc=$1
+  status=$(supervisorctl status "${proc}" 2>&1)
+  if [[ "$status" == *RUNNING* ]]; then
+    return 0
+  else
+    return 1
+  fi
+}

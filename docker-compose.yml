@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  enshrouded:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WINE_BRANCH: staging
+    image: mornedhels/enshrouded-server:latest
+    container_name: enshrouded
+    hostname: enshrouded
+    restart: unless-stopped
+    stop_grace_period: 90s
+    ports:
+      - "15636-15637:15636-15637/udp"
+    volumes:
+      - ./game:/opt/enshrouded
+    environment:
+      - SERVER_NAME=MornedhelsTest
+      - PUID=4711
+      - PGID=4711
+      - UPDATE_CRON=*/30 * * * *
+      - log_level=50

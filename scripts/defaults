@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Server Settings
+SERVER_NAME=${SERVER_NAME} # defaults to Enshrouded Server
+SERVER_PASSWORD=${SERVER_PASSWORD}
+SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT} # defaults to 16
+SERVER_PORT=${SERVER_PORT} # defaults to 15636
+SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 15637
+SERVER_IP=${SERVER_IP} # defaults to 0.0.0.0
+SERVER_SAVE_DIR=${SERVER_SAVE_DIR} # defaults to ./savegame
+SERVER_LOG_DIR=${SERVER_LOG_DIR} # defaults to ./logs
+
+# Steam Settings
+GAME_BRANCH=${GAME_BRANCH:-public}
+STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
+
+# MISC
+PUID=${PUID:-4711}
+PGID=${PGID:-4711}
+UPDATE_CRON=${UPDATE_CRON:-}
+STEAM_API_KEY=${STEAM_API_KEY:-}
+
+# WINE
+WINEDEBUG=${WINEDEBUG:-fixme-all}
+
+

@@ -1,0 +1,133 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+pidfile=$enshrouded_updater_pidfile
+latest_version=-1
+
+main() {
+  info "Running enshrouded-updater"
+  update
+  info "enshrouded-updater complete"
+}
+
+update() {
+  if [ -f "$pidfile" ]; then
+    info "Found existing PID file - checking process"
+    check_lock $pidfile
+  fi
+  trap shutdown SIGINT SIGTERM
+  if ! check_for_updates; then
+    if ! check_running "enshrouded-server"; then
+      info "Enshrouded server is not running - starting"
+      supervisorctl start enshrouded-server
+    fi
+    return
+  fi
+  if ! check_server_empty; then
+    warn "Enshrouded server is not empty - update will not be performed"
+    return
+  fi
+
+  do_update &
+  enshrouded_updater_pid=$!
+  echo $enshrouded_updater_pid >"$pidfile"
+  wait $enshrouded_updater_pid
+}
+
+do_update() {
+  if check_running "enshrouded-server"; then
+    supervisorctl stop enshrouded-server
+  fi
+  verify_cpu_mhz
+  download_enshrouded
+  if ! download_enshrouded; then
+    warn "Download of Enshrouded server failed - aborting update"
+    supervisorctl start enshrouded-server
+    clear_lock "$pidfile"
+    return
+  fi
+  set_current_version
+  supervisorctl start enshrouded-server
+
+  clear_lock "$pidfile"
+}
+
+download_enshrouded() {
+  $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id $STEAMCMD_ARGS +quit
+}
+
+# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.
+verify_cpu_mhz() {
+  local float_regex
+  local cpu_mhz
+  float_regex="^([0-9]+\\.?[0-9]*)\$"
+  cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
+  if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
+    debug "Found CPU with $cpu_mhz MHz"
+    unset CPU_MHZ
+  else
+    debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
+    export CPU_MHZ="1500.000"
+  fi
+}
+
+check_for_updates() {
+  local current_version
+  if [ -f "$version_file_path" ]; then
+    current_version=$(cat "$version_file_path")
+  else
+    current_version="0"
+  fi
+
+  latest_version=$(curl -sX GET "https://api.steamcmd.net/v1/info/$steam_app_id" | jq -r ".data.\"$steam_app_id\".depots.branches.$GAME_BRANCH.buildid")
+
+  if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
+    if [ "$current_version" == "0" ]; then
+      warn "Unable to determine latest version of enshrouded server! No version currently installed, update server anyways"
+      return 0
+    fi
+    warn "Unable to determine latest version of enshrouded server! No update will be performed"
+    return 1
+  fi
+
+  if [ "$current_version" != "$latest_version" ]; then
+    info "Enshrouded server needs to be updated"
+    return 0
+  else
+    info "Enshrouded server is already the latest version"
+    return 1
+  fi
+}
+
+check_server_empty() {
+  local connected_players
+
+  if [ -z "$STEAM_API_KEY" ] || [ -z "$SERVER_IP" ]; then
+    warn "STEAM_API_KEY and SERVER_IP must be set to check if server is empty"
+    return 0
+  fi
+
+  connected_players=$(curl -sX GET "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=$STEAM_API_KEY&filter=addr\\$SERVER_IP:$SERVER_QUERYPORT" | jq -r ".response.servers[0].players")
+  if [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+set_current_version() {
+  if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
+    warn "Unable to set current version - latest version is unknown"
+    warn "Next update check will restart the server until version can be determined"
+    return 1
+  fi
+  echo "$latest_version" >"$version_file_path"
+}
+
+shutdown() {
+  debug "Received signal to shut down enshrouded-updater"
+  clear_lock "$pidfile"
+}
+
+main

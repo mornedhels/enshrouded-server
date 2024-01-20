@@ -1,0 +1,24 @@
+name: PR-Automation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+    steps:
+      - name: generate token for automerge
+        id: automerge-app-token
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.AUTOMERGE_APP_ID }}
+          private_key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge ${{github.event.pull_request.html_url}} --auto --merge
+        env:
+          GITHUB_TOKEN: ${{ steps.automerge-app-token.outputs.token }}
