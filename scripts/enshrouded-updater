@@ -103,12 +103,12 @@ check_for_updates() {
 check_server_empty() {
   local connected_players
 
-  if [ -z "$STEAM_API_KEY" ] || [ -z "$SERVER_IP" ]; then
-    warn "STEAM_API_KEY and SERVER_IP must be set to check if server is empty"
+  if [ -z "$STEAM_API_KEY" ] || [ -z "$STEAM_API_PUBLIC_IP" ]; then
+    warn "STEAM_API_KEY and STEAM_API_PUBLIC_IP must be set to check if server is empty"
     return 0
   fi
 
-  connected_players=$(curl -sX GET "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=$STEAM_API_KEY&filter=addr\\$SERVER_IP:$SERVER_QUERYPORT" | jq -r ".response.servers[0].players")
+  connected_players=$(curl -sX GET "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=$STEAM_API_KEY&filter=addr\\$STEAM_API_PUBLIC_IP:$SERVER_QUERYPORT" | jq -r ".response.servers[0].players")
   if [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
     return 1
   fi

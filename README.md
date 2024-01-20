@@ -13,22 +13,23 @@ updates and cleanup.
 
 ## Environment Variables
 
-| Variable            | Required | Default                   | Description                                                                                                                  | WIP | 
-|---------------------|:--------:|---------------------------|------------------------------------------------------------------------------------------------------------------------------|:---:|
-| `SERVER_NAME`       |          | `Enshrouded Server`       | The name of the server                                                                                                       |  ️  |
-| `SERVER_PASSWORD`   |          |                           | The password for the server                                                                                                  |     |
-| `SERVER_SLOT_COUNT` |          | `16`                      | Max allowed players                                                                                                          |     |
-| `SERVER_PORT`       |          | `15636`                   | The game port for the server                                                                                                 |     |
-| `SERVER_QUERYPORT`  |          | `15637`                   | The steam query port for the server                                                                                          |     |
-| `SERVER_IP`         |          | `0.0.0.0`                 | Server IP for the server empty check                                                                                         |     |
-| `SERVER_SAVE_DIR`   |          | `./savegame`              | Folder for savegames                                                                                                         |     |
-| `SERVER_LOG_DIR`    |          | `./logs`                  | Folder for logs                                                                                                              |     |
-| `GAME_BRANCH`       |          | `public`                  | Steam branch (eg. testing) of the Enshrouded server                                                                          |     |
-| `PUID`              |          | `4711`                    | The UID to run server as (file permission)                                                                                   |     |
-| `PGID`              |          | `4711`                    | The GID to run server as (file permission)                                                                                   |     |
-| `UPDATE_CRON`       |          |                           | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                                        |     |
-| `STEAM_API_KEY`     |          |                           | SteamApi key to authorize requests (needed for empty server check). Server restarts regardless of occupancy, if not provided |     |
-| `STEAMCMD_ARGS`     |          | `"$GAME_BRANCH" validate` | Additional steamcmd args for the updater                                                                                     |     |
+| Variable              | Required | Default                   | Description                                                                                                                  | WIP | 
+|-----------------------|:--------:|---------------------------|------------------------------------------------------------------------------------------------------------------------------|:---:|
+| `SERVER_NAME`         |          | `Enshrouded Server`       | The name of the server                                                                                                       |  ️  |
+| `SERVER_PASSWORD`     |          |                           | The password for the server                                                                                                  |     |
+| `SERVER_SLOT_COUNT`   |          | `16`                      | Max allowed players                                                                                                          |     |
+| `SERVER_PORT`         |          | `15636`                   | The game port for the server                                                                                                 |     |
+| `SERVER_QUERYPORT`    |          | `15637`                   | The steam query port for the server                                                                                          |     |
+| `SERVER_IP`           |          | `0.0.0.0`                 | Server IP for internal network configuration                                                                                 |     |
+| `SERVER_SAVE_DIR`     |          | `./savegame`              | Folder for savegames                                                                                                         |     |
+| `SERVER_LOG_DIR`      |          | `./logs`                  | Folder for logs                                                                                                              |     |
+| `GAME_BRANCH`         |          | `public`                  | Steam branch (eg. testing) of the Enshrouded server                                                                          |     |
+| `PUID`                |          | `4711`                    | The UID to run server as (file permission)                                                                                   |     |
+| `PGID`                |          | `4711`                    | The GID to run server as (file permission)                                                                                   |     |
+| `UPDATE_CRON`         |          |                           | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                                        |     |
+| `STEAM_API_PUBLIC_IP` |          |                           | Server IP for the server empty check                                                                                         |     |
+| `STEAM_API_KEY`       |          |                           | SteamApi key to authorize requests (needed for empty server check). Server restarts regardless of occupancy, if not provided |     |
+| `STEAMCMD_ARGS`       |          | `"$GAME_BRANCH" validate` | Additional steamcmd args for the updater                                                                                     |     |
 
 ⚠️: Work in Progress
 
