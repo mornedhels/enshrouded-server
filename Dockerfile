@@ -29,7 +29,6 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/e
     && groupadd -g "${PGID:-4711}" -o enshrouded \
     && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home enshrouded \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
-    && mkdir -m 1777 -p /tmp/.X11-unix \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

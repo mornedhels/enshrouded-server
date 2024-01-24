@@ -6,8 +6,8 @@ main() {
   info "Running enshrouded-bootstrap"
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
-  initCrontab
   bootstrapWine
+  initCrontab
   supervisorctl start enshrouded-updater
   info "Bootstrap complete"
 }

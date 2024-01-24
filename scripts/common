@@ -2,8 +2,6 @@
 install_path=/opt/enshrouded/server
 version_file_path=/opt/enshrouded/current_version
 steamcmd_path=/usr/bin/steamcmd
-saves_path=$install_path/savegame
-logs_path=$install_path/logs
 steam_app_id=2278520
 enshrouded_binary_path=enshrouded_server.exe
 
@@ -18,6 +16,7 @@ enshrouded_updater_pidfile=/var/run/enshrouded/enshrouded-updater.pid
 
 # Syslog supervisor config file
 supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
+rsyslog_conf=/etc/rsyslog.d/stdout.conf
 
 # WINE
 WINEPREFIX=/home/enshrouded/

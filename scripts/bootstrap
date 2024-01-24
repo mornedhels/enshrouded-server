@@ -37,7 +37,7 @@ apply_permissions() {
 setup_syslog() {
   info "Setting up syslogd - logging to stdout"
 
-  cat >/etc/rsyslog.d/stdout.conf <<EOF
+  cat >"$rsyslog_conf" <<EOF
 \$FileOwner root
 \$FileGroup root
 \$PrivDropToUser root

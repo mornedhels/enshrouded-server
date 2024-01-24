@@ -54,7 +54,7 @@ do_update() {
 }
 
 download_enshrouded() {
-  $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id $STEAMCMD_ARGS +quit
+  $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
 }
 
 # This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.

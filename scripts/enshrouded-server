@@ -27,7 +27,7 @@ wait_for_server_download() {
 
 run_server() {
   info "Running enshrouded-server"
-  debug "Server config -SteamServerName=$SERVER_NAME -PORT=$SERVER_PORT -QueryPort=$SERVER_QUERYPORT"
+  debug "Server config ServerName:$SERVER_NAME - ServerPort:$SERVER_PORT ServerQueryPort:$SERVER_QUERYPORT"
 
   export WINEPREFIX=$WINEPREFIX
   export WINEARCH=$WINEARCH
