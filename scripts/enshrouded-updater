@@ -14,51 +14,51 @@ main() {
 update() {
   if [ -f "$pidfile" ]; then
     info "Found existing PID file - checking process"
-    check_lock $pidfile
+    checkLock $pidfile
   fi
   trap shutdown SIGINT SIGTERM
-  if ! check_for_updates; then
-    if ! check_running "enshrouded-server"; then
+  if ! checkForUpdates; then
+    if ! checkRunning "enshrouded-server"; then
       info "Enshrouded server is not running - starting"
       supervisorctl start enshrouded-server
     fi
     return
   fi
-  if ! check_server_empty; then
+  if ! checkServerEmpty; then
     warn "Enshrouded server is not empty - update will not be performed"
     return
   fi
 
-  do_update &
+  doUpdate &
   enshrouded_updater_pid=$!
   echo $enshrouded_updater_pid >"$pidfile"
   wait $enshrouded_updater_pid
 }
 
-do_update() {
-  if check_running "enshrouded-server"; then
+doUpdate() {
+  if checkRunning "enshrouded-server"; then
     supervisorctl stop enshrouded-server
   fi
-  verify_cpu_mhz
-  download_enshrouded
-  if ! download_enshrouded; then
+  verifyCpuMhz
+  if ! downloadEnshrouded; then
     warn "Download of Enshrouded server failed - aborting update"
     supervisorctl start enshrouded-server
-    clear_lock "$pidfile"
+    clearLock "$pidfile"
     return
   fi
-  set_current_version
+  setCurrentVersion
   supervisorctl start enshrouded-server
 
-  clear_lock "$pidfile"
+  clearLock "$pidfile"
 }
 
-download_enshrouded() {
+downloadEnshrouded() {
+  debug "Downloading Enshrouded server"
   $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
 }
 
 # This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.
-verify_cpu_mhz() {
+verifyCpuMhz() {
   local float_regex
   local cpu_mhz
   float_regex="^([0-9]+\\.?[0-9]*)\$"
@@ -72,7 +72,7 @@ verify_cpu_mhz() {
   fi
 }
 
-check_for_updates() {
+checkForUpdates() {
   local current_version
   if [ -f "$version_file_path" ]; then
     current_version=$(cat "$version_file_path")
@@ -100,7 +100,7 @@ check_for_updates() {
   fi
 }
 
-check_server_empty() {
+checkServerEmpty() {
   local connected_players
 
   if [ -z "$STEAM_API_KEY" ] || [ -z "$STEAM_API_PUBLIC_IP" ]; then
@@ -116,7 +116,7 @@ check_server_empty() {
   return 0
 }
 
-set_current_version() {
+setCurrentVersion() {
   if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
     warn "Unable to set current version - latest version is unknown"
     warn "Next update check will restart the server until version can be determined"
@@ -127,7 +127,7 @@ set_current_version() {
 
 shutdown() {
   debug "Received signal to shut down enshrouded-updater"
-  clear_lock "$pidfile"
+  clearLock "$pidfile"
 }
 
 main

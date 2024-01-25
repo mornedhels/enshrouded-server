@@ -10,11 +10,11 @@ cd "$install_path" || fatal "Could not cd $install_path"
 enshrouded_server="$install_path/$enshrouded_binary_path"
 
 main() {
-  wait_for_server_download
-  run_server
+  waitForServerDownload
+  runServer
 }
 
-wait_for_server_download() {
+waitForServerDownload() {
   while :; do
     if [ -f "$enshrouded_server" ]; then
       break
@@ -25,9 +25,9 @@ wait_for_server_download() {
   done
 }
 
-run_server() {
+runServer() {
   info "Running enshrouded-server"
-  debug "Server config ServerName:$SERVER_NAME - ServerPort:$SERVER_PORT ServerQueryPort:$SERVER_QUERYPORT"
+  debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-15636} - ServerQueryPort:${SERVER_QUERYPORT:-15637}"
 
   export WINEPREFIX=$WINEPREFIX
   export WINEARCH=$WINEARCH
@@ -48,7 +48,7 @@ run_server() {
 }
 
 cleanup() {
-  clear_lock "$enshrouded_server_pidfile"
+  clearLock "$enshrouded_server_pidfile"
 }
 
 shutdown() {

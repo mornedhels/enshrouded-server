@@ -3,13 +3,14 @@
 . "$(dirname "$0")/defaults"
 
 main() {
-  apply_permissions
-  setup_syslog
+  verifyVariables
+  applyPermissions
+  setupSyslog
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
 # Apply user id and group id
-apply_permissions() {
+applyPermissions() {
   info "Setting uid:gid of enshrouded to $PUID:$PGID"
   groupmod -g "${PGID}" -o enshrouded
   usermod -u "${PUID}" -o enshrouded
@@ -34,7 +35,7 @@ apply_permissions() {
 }
 
 # Configure syslog
-setup_syslog() {
+setupSyslog() {
   info "Setting up syslogd - logging to stdout"
 
   cat >"$rsyslog_conf" <<EOF
@@ -62,6 +63,57 @@ autostart=true
 autorestart=true
 priority=10
 EOF
+}
+
+verifyVariables() {
+  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+    if [[ "$SERVER_SLOT_COUNT" -lt 1 ]] || [[ "$SERVER_SLOT_COUNT" -gt 16 ]]; then
+      error "SERVER_SLOT_COUNT must be between 1 and 16 (actual: $SERVER_SLOT_COUNT)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$SERVER_PORT" ]]; then
+    if [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
+      error "SERVER_PORT must be between 1 and 65535 (actual: $SERVER_PORT)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$SERVER_QUERYPORT" ]]; then
+    if [[ "$SERVER_QUERYPORT" -lt 1 ]] || [[ "$SERVER_QUERYPORT" -gt 65535 ]]; then
+      error "SERVER_QUERYPORT must be between 1 and 65535 (actual: $SERVER_QUERYPORT)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$SERVER_IP" ]]; then
+    if ! [[ "$SERVER_IP" =~ ^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+      error "SERVER_IP must be a valid ipv4 address (actual: $SERVER_IP)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$STEAM_API_PUBLIC_IP" ]]; then
+    if ! [[ "$STEAM_API_PUBLIC_IP" =~ ^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+      error "STEAM_API_PUBLIC_IP must be a valid ipv4 address (actual: $STEAM_API_PUBLIC_IP)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$PUID" ]]; then
+    if ! [[ "$PUID" =~ ^[0-9]+$ ]]; then
+      error "PUID must be a valid uid (actual: $PUID)"
+      exit 1
+    fi
+  fi
+
+  if [[ -n "$PGID" ]]; then
+    if ! [[ "$PGID" =~ ^[0-9]+$ ]]; then
+      error "PGID must be a valid gid (actual: $PGID)"
+      exit 1
+    fi
+  fi
 }
 
 main

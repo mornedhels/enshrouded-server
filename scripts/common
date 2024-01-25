@@ -68,7 +68,7 @@ printline() {
   fi
 }
 
-check_lock() {
+checkLock() {
   local pidfile
   local predecessor_pid
   local numre
@@ -81,22 +81,22 @@ check_lock() {
       fatal "Process with PID $predecessor_pid already running - exiting"
     else
       info "Removing stale PID file and starting run"
-      clear_lock_and_run "$pidfile"
+      clearLockAndRun "$pidfile"
     fi
   else
     warn "Predecessor PID is corrupt - clearing lock and running"
-    clear_lock_and_run "$pidfile"
+    clearLockAndRun "$pidfile"
   fi
 }
 
-clear_lock_and_run() {
+clearLockAndRun() {
   local pidfile
   pidfile=$1
-  clear_lock "$pidfile"
+  clearLock "$pidfile"
   main
 }
 
-clear_lock() {
+clearLock() {
   local pidfile
   pidfile=$1
   info "Releasing PID file $pidfile"
@@ -104,7 +104,7 @@ clear_lock() {
   rm -f "$1"
 }
 
-check_running() {
+checkRunning() {
   local proc
   local status
   proc=$1
