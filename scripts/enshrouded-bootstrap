@@ -87,15 +87,15 @@ EOF
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --arg gamePort "$SERVER_PORT" '.gamePort = $gamePort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    echo "$(jq --argjson gamePort "$SERVER_PORT" '.gamePort = $gamePort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
-    echo "$(jq --arg queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    echo "$(jq --arg slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    echo "$(jq --argjson slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 }
 
