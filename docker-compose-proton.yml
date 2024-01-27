@@ -3,10 +3,10 @@ services:
   enshrouded:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile
+      dockerfile: dockerfiles/proton.Dockerfile
       args:
         WINE_BRANCH: stable
-    image: mornedhels/enshrouded-server:dev
+    image: mornedhels/enshrouded-server:dev-proton
     container_name: enshrouded
     hostname: enshrouded
     restart: unless-stopped

@@ -23,6 +23,9 @@ WINEPREFIX=/home/enshrouded/
 WINEARCH=win64
 WINEPATH=$install_path
 
+# Proton
+PROTONPREFIX="$install_path/steamapps/compatdata/$steam_app_id/pfx"
+
 # log levels
 debug=50
 info=40

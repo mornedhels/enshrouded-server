@@ -2,7 +2,8 @@ FROM steamcmd/steamcmd:ubuntu-22@sha256:a41e8440eeb00a7a1babc757a4cdce58cd8864ab
 LABEL maintainer="docker@mornedhels.de"
 
 # Install prerequisites
-RUN apt-get update \
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
         cabextract \
         curl \
@@ -10,19 +11,22 @@ RUN apt-get update \
         supervisor \
         cron \
         rsyslog \
-        jq
-
-# Install wine
-ARG WINE_BRANCH=stable
-RUN dpkg --add-architecture i386 \
-    && mkdir -pm755 /etc/apt/keyrings \
-    && curl -o /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
-    && curl -O --output-dir /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2)/winehq-$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2).sources \
-    && apt update && DEBIAN_FRONTEND="noninteractive" apt -y --install-recommends install winehq-${WINE_BRANCH}
+        jq \
+        tar \
+        dbus \
+        libfreetype6 \
+        libfreetype6:i386
 
 # Install winetricks (unused)
 RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
     && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks
+
+# install proton
+RUN curl -sLOJ "$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep browser_download_url | cut -d\" -f4 | grep .tar.gz)" \
+    && tar -xzf GE-Proton*.tar.gz -C /usr/local/bin/ --strip-components=1 \
+    && rm GE-Proton*.* \
+    && rm -f /etc/machine-id \
+    && dbus-uuidgen --ensure=/etc/machine-id
 
 # MISC
 RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam \
@@ -32,8 +36,8 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/e
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY ./supervisord.conf /etc/supervisor/supervisord.conf
-COPY --chmod=755 ./scripts/* /usr/local/etc/enshrouded/
+COPY ../supervisord.conf /etc/supervisor/supervisord.conf
+COPY --chmod=755 ../scripts/default/* ../scripts/proton/* /usr/local/etc/enshrouded/
 
 WORKDIR /usr/local/etc/enshrouded
 CMD ["/usr/local/etc/enshrouded/bootstrap"]
