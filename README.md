@@ -41,6 +41,18 @@ see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/160554414
 * STEAM_API_KEY is only needed for the update cron, to check if the server is empty. You can get a key from
   [Steam](https://steamcommunity.com/dev/apikey). If not supplied, the check will be skipped.
 
+## Image Tags
+
+| Tag                | Virtualization | Description                  |
+|--------------------|----------------|------------------------------|
+| `latest`           | wine           | Latest image based on wine   |
+| `stable-wine`      | wine           | Same as latest image         |
+| `<version>-wine`   | wine           | Pinned image based on wine   |
+| `stable-proton`    | proton         | Latest image based on proton |
+| `<version>-proton` | proton         | Pinned image based on proton |
+| `dev`              | wine           | Dev build based on wine      |
+| `dev-proton`       | proton         | Dev build based on proton    |
+
 ## Ports (default)
 
 | Port      | Description      |
@@ -60,11 +72,6 @@ the environment variables `PUID` and `PGID`.
 ## Recommended System Requirements
 
 [Official Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055628734109-Recommended-Server-Specifications)
-
-* **CPU:** TBD
-* **RAM:** TBD
-* **Disk:** TBD
-* **Docker Host:** TBD
 
 ## Usage
 

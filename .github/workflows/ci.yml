@@ -19,6 +19,7 @@ jobs:
     with:
       image-name: enshrouded-server
       image-tag: dev
+      dockerfile: dockerfiles/Dockerfile
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
   build-wine-staging:
@@ -26,8 +27,18 @@ jobs:
     with:
       image-name: enshrouded-server
       image-tag: dev-wine-staging
+      dockerfile: dockerfiles/Dockerfile
       build-args: |
         WINE_BRANCH=staging
+      trivy-scan: false
+    secrets:
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+  build-proton:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
+    with:
+      image-name: enshrouded-server
+      image-tag: dev-proton
+      dockerfile: dockerfiles/proton.Dockerfile
       trivy-scan: false
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}

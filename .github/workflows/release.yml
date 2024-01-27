@@ -7,18 +7,31 @@ on:
 concurrency: Release-${{ github.ref }}
 
 jobs:
-  docker-build:
+  docker-build-wine:
     uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
     with:
       image-name: enshrouded-server
+      dockerfile: dockerfiles/Dockerfile
       image-tag: |
         ${{ github.event.release.tag_name }}
+        ${{ github.event.release.tag_name }}-wine
+        stable-wine
         latest
+    secrets:
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+  docker-build-proton:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
+    with:
+      image-name: enshrouded-server
+      dockerfile: dockerfiles/proton.Dockerfile
+      image-tag: |
+        ${{ github.event.release.tag_name }}-proton
+        stable-proton
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
   update-readme:
     runs-on: ubuntu-latest
-    needs: [docker-build]
+    needs: [docker-build-wine,docker-build-proton]
     steps:
       - uses: actions/checkout@v4
       - name: Update Docker Hub Description
