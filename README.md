@@ -145,7 +145,7 @@ volumes:
 
 * **Force Update:**
   ```bash
-  docker compose exec enshrouded supervisorctl start force-update
+  docker compose exec enshrouded supervisorctl start enshrouded-force-update
   ```
 
 ## Known Issues
