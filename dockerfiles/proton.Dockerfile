@@ -15,7 +15,8 @@ RUN dpkg --add-architecture i386 \
         tar \
         dbus \
         libfreetype6 \
-        libfreetype6:i386
+        libfreetype6:i386 \
+        gnutls-bin
 
 # Install winetricks (unused)
 RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \

@@ -30,19 +30,13 @@ runServer() {
   debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-15636} - ServerQueryPort:${SERVER_QUERYPORT:-15637}"
 
   export WINEDEBUG=$WINEDEBUG
-  export WINEDLLPATH="/usr/local/bin/files/lib64//wine:/usr/local/bin/files/lib//wine"
-  export LD_LIBRARY_PATH="/usr/local/bin/files/lib64/:/usr/local/bin/files/lib/"
   export WINEPREFIX="$install_path/steamapps/compatdata/$steam_app_id/pfx/"
-  export WINEESYNC="1"
-  export WINEFSYNC="1"
-  export WINEDLLOVERRIDES="steam.exe=b;dotnetfx35.exe=b;dotnetfx35setup.exe=b;beclient.dll=b,n;beclient_x64.dll=b,n;d3d11=n;d3d10core=n;d3d9=n;dxgi=n;d3d12=n;d3d12core=n"
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/enshrouded/.steam/steam"
-  export WINE_LARGE_ADDRESS_AWARE="1"
-  export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/local/bin/files/lib64/gstreamer-1.0:/usr/local/bin/files/lib/gstreamer-1.0"
-  export WINE_GST_REGISTRY_DIR="$install_path/steamapps/compatdata/$steam_app_id/gstreamer-1.0/"
+  export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
+  export WINETRICKS="/usr/local/bin/winetricks"
 
   chmod +x "$enshrouded_server"
-  /usr/local/bin/files/bin/wine64 "$enshrouded_server" &
+  proton runinprefix "$enshrouded_server" &
   enshrouded_server_pid=$!
   echo $enshrouded_server_pid >"$enshrouded_server_pidfile"
 
@@ -55,6 +49,8 @@ runServer() {
 }
 
 cleanup() {
+  debug "cleanup wineserver"
+  /usr/local/bin/files/bin/wineserver -k
   clearLock "$enshrouded_server_pidfile"
 }
 
