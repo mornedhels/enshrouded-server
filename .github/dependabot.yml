@@ -5,7 +5,7 @@ version: 2
 updates:
     # Keep Docker dependencies up to date
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/dockerfiles"
     schedule:
       interval: "weekly"
 
