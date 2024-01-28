@@ -153,4 +153,9 @@ volumes:
 
 ## Known Issues
 
-No known issues so far.
+* The server doesn't start (not logging `'HostOnline' (up)!`) or the update fails with following error:
+  ```
+  Error! App '2278520' state is 0x202 after update job.
+  ```
+  This means there is probably something wrong with your file permissions. Make sure the UID and GID are correct and the
+  files are owned by the correct user.
