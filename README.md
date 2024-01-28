@@ -28,6 +28,9 @@ updates and cleanup.
 | `UPDATE_CRON`         |          |                     | string (cron format) | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                                        |     |
 | `STEAM_API_PUBLIC_IP` |          |                     | string (ipv4)        | Server IP for the server empty check                                                                                         |     |
 | `STEAM_API_KEY`       |          |                     | string               | SteamApi key to authorize requests (needed for empty server check). Server restarts regardless of occupancy, if not provided |     |
+| `BACKUP_CRON`         |          |                     | string (cron format) | Backup game server files cron (eg. `*/15 * * *` backup saves every 15 minutes)                                               | ⚠️  |
+| `BACKUP_DIR`          |          | `./backup`          | string               | Folder for backups (relative and absolute paths are supported)                                                               | ⚠️  |
+| `BACKUP_COUNT`        |          | `0`                 | integer              | Number of backups to keep (0 means infinite)                                                                                 | ⚠️  |
 | `GAME_BRANCH`         |          | `public`            | string               | Steam branch (eg. testing) of the Enshrouded server                                                                          |     |
 | `STEAMCMD_ARGS`       |          | `validate`          | string               | Additional steamcmd args for the updater                                                                                     |     |
 

@@ -12,6 +12,8 @@ RUN dpkg --add-architecture i386 \
         cron \
         rsyslog \
         jq \
+        lsof \
+        zip \
         tar \
         dbus \
         libfreetype6 \

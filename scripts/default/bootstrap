@@ -4,9 +4,37 @@
 
 main() {
   verifyVariables
+  createFolders
   applyPermissions
   setupSyslog
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+}
+
+createFolders() {
+  info "Creating server folders (save, logs, backup)"
+  if [[ -n "$SERVER_SAVE_DIR" ]]; then
+    if [[ "$SERVER_SAVE_DIR" == /* ]]; then
+      mkdir -p "$SERVER_SAVE_DIR"
+    else
+      mkdir -p "$install_path/$SERVER_SAVE_DIR"
+    fi
+  fi
+
+  if [[ -n "$SERVER_LOG_DIR" ]]; then
+    if [[ "$SERVER_LOG_DIR" == /* ]]; then
+      mkdir -p "$SERVER_LOG_DIR"
+    else
+      mkdir -p "$install_path/$SERVER_LOG_DIR"
+    fi
+  fi
+
+  if [[ -n "$BACKUP_CRON" ]] && [[ -n "$BACKUP_DIR" ]]; then
+    if [[ "$BACKUP_DIR" == /* ]]; then
+      mkdir -p "$BACKUP_DIR"
+    else
+      mkdir -p "$install_path/$BACKUP_DIR"
+    fi
+  fi
 }
 
 # Apply user id and group id
@@ -29,6 +57,11 @@ applyPermissions() {
   if [[ "$SERVER_LOG_DIR" == /* ]]; then
     debug "Setting permissions for $SERVER_LOG_DIR"
     chown -R enshrouded:enshrouded "$SERVER_LOG_DIR"
+  fi
+
+  if [[ "$BACKUP_DIR" == /* ]]; then
+    debug "Setting permissions for $BACKUP_DIR"
+    chown -R enshrouded:enshrouded "$BACKUP_DIR"
   fi
 
   chgrp enshrouded /etc/supervisor/supervisord.conf

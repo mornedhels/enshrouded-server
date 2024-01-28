@@ -10,7 +10,9 @@ RUN apt-get update \
         supervisor \
         cron \
         rsyslog \
-        jq
+        jq \
+        lsof \
+        zip
 
 # Install wine
 ARG WINE_BRANCH=stable

@@ -1,6 +1,7 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
+. "$(dirname "$0")/enshrouded-bootstrap-shared"
 
 main() {
   info "Running enshrouded-bootstrap"
@@ -11,10 +12,6 @@ main() {
   initCrontab
   supervisorctl start enshrouded-updater
   info "Bootstrap complete"
-}
-
-prepareEnshroudedAppFolders() {
-  mkdir -p "$install_path"
 }
 
 bootstrapProton() {
@@ -39,72 +36,6 @@ fixSteamClient() {
   mkdir -p ~/.steam/sdk64/
   $steamcmd_path +login anonymous +app_update 1007 +quit
   cp ~/Steam/steamapps/common/Steamworks\ SDK\ Redist/linux64/steamclient.so ~/.steam/sdk64/
-}
-
-initCrontab() {
-  crontab=$(mktemp)
-
-  if [ -n "$UPDATE_CRON" ]; then
-    debug "creating cron for update checks (schedule: $UPDATE_CRON)"
-    echo "$UPDATE_CRON supervisorctl start enshrouded-updater >/dev/null 2>&1" >>"$crontab"
-  fi
-
-  crontab "$crontab"
-  rm -f "$crontab"
-}
-
-updateOrCreateEnshroudedServerConfig() {
-  if [[ ! -e ${install_path}/enshrouded_server.json ]]; then
-    mkdir -p ${install_path}
-    touch ${install_path}/enshrouded_server.json
-
-    # write json to file ${install_path}/enshrouded_server.json
-
-    cat >${install_path}/enshrouded_server.json << EOF
-{
-  "name": "Enshrouded Server",
-  "password": "",
-  "saveDirectory": "./savegame",
-  "logDirectory": "./logs",
-  "ip": "0.0.0.0",
-  "gamePort": 15636,
-  "queryPort": 15637,
-  "slotCount": 16
-}
-EOF
-  fi
-
-  if [[ -n "$SERVER_NAME" ]]; then
-    echo "$(jq --arg name "$SERVER_NAME" '.name = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_PASSWORD" ]]; then
-    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_SAVE_DIR" ]]; then
-    echo "$(jq --arg saveDirectory "$SERVER_SAVE_DIR" '.saveDirectory = $saveDirectory' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_LOG_DIR" ]]; then
-    echo "$(jq --arg logDirectory "$SERVER_LOG_DIR" '.logDirectory = $logDirectory' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_IP" ]]; then
-    echo "$(jq --arg ip "$SERVER_IP" '.ip = $ip' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --argjson gamePort "$SERVER_PORT" '.gamePort = $gamePort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_QUERYPORT" ]]; then
-    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    echo "$(jq --argjson slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
 }
 
 main
