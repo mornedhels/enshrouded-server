@@ -1,0 +1,109 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+pidfile=$enshrouded_backup_pidfile
+save_dir=""
+backup_dir=""
+
+main() {
+  info "Running enshrouded-backup"
+  prepareBackup
+  info "enshrouded-backup complete"
+}
+
+prepareBackup() {
+  if [ -f "$pidfile" ]; then
+    info "Found existing PID file - checking process"
+    checkLock $pidfile
+  fi
+
+  getSaveDir
+  getBackupDir
+
+  if [ ! -f "$save_dir/$savefile_name" ]; then
+    warn "Save file not found - aborting backup"
+    return
+  fi
+
+  trap shutdown SIGINT SIGTERM
+
+  backupAndCleanup &
+  enshrouded_backup_pid=$!
+  echo $enshrouded_backup_pid >"$pidfile"
+  wait $enshrouded_backup_pid
+}
+
+backupAndCleanup() {
+  backup
+  cleanup
+  clearLock "$pidfile"
+}
+
+backup() {
+  local backup_file_name
+  debug "run backup"
+
+  # check if save file is older than 6 minutes
+  if [ $(($(date +%s) - $(stat -c %X "$save_dir/$savefile_name"))) -gt 360 ]; then
+    info "Save file is older than 6 minutes - server is probably just starting up - skipping backup"
+    return
+  fi
+
+  # check last access time > 4 minutes wait for 90 seconds
+  if [ $(($(date +%s) - $(stat -c %X "$save_dir/$savefile_name"))) -gt 240 ]; then
+    info "Save file is older than 4 minutes - waiting for 90 seconds to ensure save is complete"
+    sleep 90
+  fi
+
+  # check if file is still being written to with lsof
+  while [ -n "$(lsof -t "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup")" ]; do
+    info "Save file is still being written to - waiting for 5 seconds to ensure save is complete"
+    sleep 5
+  done
+
+  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
+
+  info "Backing up save file to $backup_dir/$backup_file_name"
+  debug "zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup""
+  zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup"
+}
+
+cleanup() {
+  debug "run cleanup"
+
+  # skip if BACKUP_MAX_COUNT is not set or is 0
+  if [ -z "$BACKUP_MAX_COUNT" ] || [ "$BACKUP_MAX_COUNT" -eq 0 ]; then
+    warn "Skipping cleanup - BACKUP_MAX_COUNT is not set or is 0 (infinite)"
+    return
+  fi
+
+  info "Removing old backups with number of backups set to $BACKUP_MAX_COUNT"
+  find "$backup_dir" -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f 2- | head -n -$BACKUP_MAX_COUNT | xargs rm -fv
+}
+
+getSaveDir() {
+  if [ -z "$SERVER_SAVE_DIR" ]; then
+    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/enshrouded_server.json)
+  fi
+  if [[ "$SERVER_SAVE_DIR" == /* ]]; then
+    save_dir="$SERVER_SAVE_DIR"
+  else
+    save_dir="$install_path/$SERVER_SAVE_DIR"
+  fi
+}
+
+getBackupDir() {
+  if [[ "$BACKUP_DIR" == /* ]]; then
+    backup_dir="$BACKUP_DIR"
+  else
+    backup_dir="$install_path/$BACKUP_DIR"
+  fi
+}
+
+shutdown() {
+  debug "Received signal to shut down enshrouded-backup"
+  clearLock "$pidfile"
+}
+
+main
