@@ -81,6 +81,11 @@ verifyCpuMhz() {
 
 checkForUpdates() {
   local current_version
+
+  if checkProtonFilesAvailable; then
+    return 0
+  fi
+
   if [ -f "$version_file_path" ]; then
     current_version=$(cat "$version_file_path")
   else
@@ -105,6 +110,14 @@ checkForUpdates() {
     info "Enshrouded server is already the latest version"
     return 1
   fi
+}
+
+checkProtonFilesAvailable() {
+  if [ ! -d "$install_path/steamapps/compatdata/$steam_app_id" ]; then
+    warn "Proton files are not available! Performing Enshrouded update to generate proton files"
+    return 0
+  fi
+  return 1
 }
 
 checkServerEmpty() {
