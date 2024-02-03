@@ -27,6 +27,13 @@ prepareSteamA2sPythonLibrary() {
   pip3 install python-a2s==1.3.0
 }
 
+bootstrapHook() {
+  if [ -n "$BOOTSTRAP_HOOK" ]; then
+    info "Running bootstrap hook: $BOOTSTRAP_HOOK"
+    eval "$BOOTSTRAP_HOOK"
+  fi
+}
+
 updateOrCreateEnshroudedServerConfig() {
   if [[ ! -e ${install_path}/enshrouded_server.json ]]; then
     mkdir -p ${install_path}
