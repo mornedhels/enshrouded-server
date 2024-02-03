@@ -1,55 +1,12 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
-
-pidfile=$enshrouded_updater_pidfile
-latest_version=-1
+. "$(dirname "$0")/enshrouded-updater-shared"
 
 main() {
   info "Running enshrouded-updater"
   update
   info "enshrouded-updater complete"
-}
-
-update() {
-  if [ -f "$pidfile" ]; then
-    info "Found existing PID file - checking process"
-    checkLock $pidfile
-  fi
-  trap shutdown SIGINT SIGTERM
-  if ! checkForUpdates; then
-    if ! checkRunning "enshrouded-server"; then
-      info "Enshrouded server is not running - starting"
-      supervisorctl start enshrouded-server
-    fi
-    return
-  fi
-  if ! checkServerEmpty; then
-    warn "Enshrouded server is not empty - update will not be performed"
-    return
-  fi
-
-  doUpdate &
-  enshrouded_updater_pid=$!
-  echo $enshrouded_updater_pid >"$pidfile"
-  wait $enshrouded_updater_pid
-}
-
-doUpdate() {
-  if checkRunning "enshrouded-server"; then
-    supervisorctl stop enshrouded-server
-  fi
-  verifyCpuMhz
-  if ! downloadEnshrouded; then
-    warn "Download of Enshrouded server failed - aborting update"
-    supervisorctl start enshrouded-server
-    clearLock "$pidfile"
-    return
-  fi
-  setCurrentVersion
-  supervisorctl start enshrouded-server
-
-  clearLock "$pidfile"
 }
 
 downloadEnshrouded() {
@@ -62,21 +19,6 @@ downloadEnshrouded() {
   export STEAM_DIR="/home/enshrouded/.steam/steam/"
 
   $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update 1007 +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
-}
-
-# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.
-verifyCpuMhz() {
-  local float_regex
-  local cpu_mhz
-  float_regex="^([0-9]+\\.?[0-9]*)\$"
-  cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
-  if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
-    debug "Found CPU with $cpu_mhz MHz"
-    unset CPU_MHZ
-  else
-    debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
-    export CPU_MHZ="1500.000"
-  fi
 }
 
 checkForUpdates() {
@@ -118,36 +60,6 @@ checkProtonFilesAvailable() {
     return 0
   fi
   return 1
-}
-
-checkServerEmpty() {
-  local connected_players
-
-  if [ -z "$STEAM_API_KEY" ] || [ -z "$STEAM_API_PUBLIC_IP" ]; then
-    warn "STEAM_API_KEY and STEAM_API_PUBLIC_IP must be set to check if server is empty"
-    return 0
-  fi
-
-  connected_players=$(curl -sX GET "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=$STEAM_API_KEY&filter=addr\\$STEAM_API_PUBLIC_IP:$SERVER_QUERYPORT" | jq -r ".response.servers[0].players")
-  if [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
-    return 1
-  fi
-
-  return 0
-}
-
-setCurrentVersion() {
-  if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
-    warn "Unable to set current version - latest version is unknown"
-    warn "Next update check will restart the server until version can be determined"
-    return 1
-  fi
-  echo "$latest_version" >"$version_file_path"
-}
-
-shutdown() {
-  debug "Received signal to shut down enshrouded-updater"
-  clearLock "$pidfile"
 }
 
 main

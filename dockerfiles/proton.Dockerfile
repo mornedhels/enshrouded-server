@@ -14,6 +14,8 @@ RUN dpkg --add-architecture i386 \
         jq \
         lsof \
         zip \
+        python3 \
+        python3-pip \
         tar \
         dbus \
         libfreetype6 \

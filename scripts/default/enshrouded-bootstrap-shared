@@ -23,6 +23,10 @@ initCrontab() {
   rm -f "$crontab"
 }
 
+prepareSteamA2sPythonLibrary() {
+  pip3 install python-a2s==1.3.0
+}
+
 updateOrCreateEnshroudedServerConfig() {
   if [[ ! -e ${install_path}/enshrouded_server.json ]]; then
     mkdir -p ${install_path}
