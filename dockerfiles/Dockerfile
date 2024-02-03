@@ -12,7 +12,9 @@ RUN apt-get update \
         rsyslog \
         jq \
         lsof \
-        zip
+        zip \
+        python3 \
+        python3-pip
 
 # Install wine
 ARG WINE_BRANCH=stable

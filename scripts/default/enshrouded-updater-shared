@@ -1,0 +1,100 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+pidfile=$enshrouded_updater_pidfile
+latest_version=-1
+
+update() {
+  if [ -f "$pidfile" ]; then
+    info "Found existing PID file - checking process"
+    checkLock $pidfile
+  fi
+  trap shutdown SIGINT SIGTERM
+  if ! checkForUpdates; then
+    if ! checkRunning "enshrouded-server"; then
+      info "Enshrouded server is not running - starting"
+      supervisorctl start enshrouded-server
+    fi
+    return
+  fi
+  if ! checkServerEmpty; then
+    warn "Enshrouded server is not empty - update will not be performed"
+    return
+  fi
+
+  doUpdate &
+  enshrouded_updater_pid=$!
+  echo $enshrouded_updater_pid >"$pidfile"
+  wait $enshrouded_updater_pid
+}
+
+doUpdate() {
+  if checkRunning "enshrouded-server"; then
+    supervisorctl stop enshrouded-server
+  fi
+  verifyCpuMhz
+  if ! downloadEnshrouded; then
+    warn "Download of Enshrouded server failed - aborting update"
+    supervisorctl start enshrouded-server
+    clearLock "$pidfile"
+    return
+  fi
+  setCurrentVersion
+  supervisorctl start enshrouded-server
+
+  clearLock "$pidfile"
+}
+
+# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.
+verifyCpuMhz() {
+  local float_regex
+  local cpu_mhz
+  float_regex="^([0-9]+\\.?[0-9]*)\$"
+  cpu_mhz=$(grep "^cpu MHz" /proc/cpuinfo | head -1 | cut -d : -f 2 | xargs)
+  if [ -n "$cpu_mhz" ] && [[ "$cpu_mhz" =~ $float_regex ]] && [ "${cpu_mhz%.*}" -gt 0 ]; then
+    debug "Found CPU with $cpu_mhz MHz"
+    unset CPU_MHZ
+  else
+    debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
+    export CPU_MHZ="1500.000"
+  fi
+}
+
+checkServerEmpty() {
+  local connected_players
+
+  if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
+    return 0
+  fi
+
+  connected_players=$(python3 -c "
+try:
+    import a2s
+    print(len(a2s.players(('127.0.0.1',${SERVER_QUERYPORT:-15637}))))
+except Exception as e:
+    print('null')
+")
+
+  debug "[checkServerEmpty] connected_players: $connected_players"
+  if [ -n "$connected_players" ] && [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+setCurrentVersion() {
+  if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
+    warn "Unable to set current version - latest version is unknown"
+    warn "Next update check will restart the server until version can be determined"
+    return 1
+  fi
+  debug "[setCurrentVersion]: $latest_version"
+  echo "$latest_version" >"$version_file_path"
+}
+
+shutdown() {
+  debug "Received signal to shut down enshrouded-updater"
+  clearLock "$pidfile"
+}
