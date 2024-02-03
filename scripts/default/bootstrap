@@ -147,6 +147,13 @@ verifyVariables() {
       exit 1
     fi
   fi
+
+  if [[ -n "$UPDATE_CHECK_PLAYERS" ]]; then
+    if [[ "$UPDATE_CHECK_PLAYERS" != "true" ]] && [[ "$UPDATE_CHECK_PLAYERS" != "false" ]]; then
+      error "UPDATE_CHECK_PLAYERS must be true or false (actual: $UPDATE_CHECK_PLAYERS)"
+      exit 1
+    fi
+  fi
 }
 
 main
