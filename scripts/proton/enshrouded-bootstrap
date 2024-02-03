@@ -8,6 +8,7 @@ main() {
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
   prepareSteamA2sPythonLibrary
+  bootstrapHook
 
   # no proton bootstrap needed
 

@@ -42,6 +42,7 @@ doUpdate() {
   fi
   setCurrentVersion
   supervisorctl start enshrouded-server
+  updatePostHook
 
   clearLock "$pidfile"
 }
@@ -92,6 +93,13 @@ setCurrentVersion() {
   fi
   debug "[setCurrentVersion]: $latest_version"
   echo "$latest_version" >"$version_file_path"
+}
+
+updatePostHook() {
+  if [ -n "$UPDATE_POST_HOOK" ]; then
+    info "Running update post hook: $UPDATE_POST_HOOK"
+    eval "$UPDATE_POST_HOOK"
+  fi
 }
 
 shutdown() {

@@ -13,25 +13,25 @@ updates and cleanup.
 
 ## Environment Variables
 
-| Variable               | Required | Default             | Contraints            | Description                                                                                                                  | WIP | 
-|------------------------|:--------:|---------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------|:---:|
-| `SERVER_NAME`          |          | `Enshrouded Server` | string                | The name of the server                                                                                                       |  ️  |
-| `SERVER_PASSWORD`      |          |                     | string                | The password for the server                                                                                                  |     |
-| `SERVER_SLOT_COUNT`    |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                               |     |
-| `SERVER_PORT`          |          | `15636`             | integer               | The game port for the server                                                                                                 |     |
-| `SERVER_QUERYPORT`     |          | `15637`             | integer               | The steam query port for the server                                                                                          |     |
-| `SERVER_IP`            |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                                 |     |
-| `SERVER_SAVE_DIR`      |          | `./savegame`        | string                | Folder for savegames (relative and absolute paths are supported)                                                             |     |
-| `SERVER_LOG_DIR`       |          | `./logs`            | string                | Folder for logs (relative and absolute paths are supported)                                                                  |     |
-| `PUID`                 |          | `4711`              | integer               | The UID to run server as (file permission)                                                                                   |     |
-| `PGID`                 |          | `4711`              | integer               | The GID to run server as (file permission)                                                                                   |     |
-| `UPDATE_CRON`          |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                                        |     |
-| `UPDATE_CHECK_PLAYERS` |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                              |     |
-| `BACKUP_CRON`          |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes           | ⚠️  |
-| `BACKUP_DIR`           |          | `./backup`          | string                | Folder for backups (relative and absolute paths are supported)                                                               | ⚠️  |
-| `BACKUP_MAX_COUNT`     |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                                 | ⚠️  |
-| `GAME_BRANCH`          |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                          |     |
-| `STEAMCMD_ARGS`        |          | `validate`          | string                | Additional steamcmd args for the updater                                                                                     |     |
+| Variable               | Required | Default             | Contraints            | Description                                                                                                        | WIP | 
+|------------------------|:--------:|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|:---:|
+| `SERVER_NAME`          |          | `Enshrouded Server` | string                | The name of the server                                                                                             |  ️  |
+| `SERVER_PASSWORD`      |          |                     | string                | The password for the server                                                                                        |     |
+| `SERVER_SLOT_COUNT`    |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
+| `SERVER_PORT`          |          | `15636`             | integer               | The game port for the server                                                                                       |     |
+| `SERVER_QUERYPORT`     |          | `15637`             | integer               | The steam query port for the server                                                                                |     |
+| `SERVER_IP`            |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                       |     |
+| `SERVER_SAVE_DIR`      |          | `./savegame`        | string                | Folder for savegames (relative and absolute paths are supported)                                                   |     |
+| `SERVER_LOG_DIR`       |          | `./logs`            | string                | Folder for logs (relative and absolute paths are supported)                                                        |     |
+| `PUID`                 |          | `4711`              | integer               | The UID to run server as (file permission)                                                                         |     |
+| `PGID`                 |          | `4711`              | integer               | The GID to run server as (file permission)                                                                         |     |
+| `UPDATE_CRON`          |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                              |     |
+| `UPDATE_CHECK_PLAYERS` |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                    |     |
+| `BACKUP_CRON`          |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes |     |
+| `BACKUP_DIR`           |          | `./backup`          | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
+| `BACKUP_MAX_COUNT`     |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
+| `GAME_BRANCH`          |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
+| `STEAMCMD_ARGS`        |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 
 All environment Variables prefixed with SERVER, are the available enshrouded_server.json options (
 see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
@@ -42,6 +42,17 @@ see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/160554414
 
 * STEAM_API_KEY is only needed for the update cron, to check if the server is empty. You can get a key from
   [Steam](https://steamcommunity.com/dev/apikey). If not supplied, the check will be skipped.
+
+### Hooks
+
+| Variable           | Description                            | WIP |
+|--------------------|----------------------------------------|:---:|
+| `BOOTSTRAP_HOOK`   | Command to run after generel bootstrap | ⚠️  |
+| `UPDATE_POST_HOOK` | Command to run after update            | ⚠️  |
+
+The scripts will wait for the hook to resolve/return before continuing.
+
+⚠️: Work in Progress
 
 ## Image Tags
 
