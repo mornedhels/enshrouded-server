@@ -30,7 +30,6 @@ runServer() {
   debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-15636} - ServerQueryPort:${SERVER_QUERYPORT:-15637}"
 
   export WINEDEBUG=$WINEDEBUG
-  export WINEPREFIX="$install_path/steamapps/compatdata/$steam_app_id/pfx/"
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/enshrouded/.steam/steam"
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
   export WINETRICKS="/usr/local/bin/winetricks"
@@ -50,7 +49,7 @@ runServer() {
 
 cleanup() {
   debug "cleanup wineserver"
-  /usr/local/bin/files/bin/wineserver -k
+  WINEPREFIX="$install_path/steamapps/compatdata/$steam_app_id/pfx/" /usr/local/bin/files/bin/wineserver -k
   clearLock "$enshrouded_server_pidfile"
 }
 

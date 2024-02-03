@@ -7,35 +7,12 @@ main() {
   info "Running enshrouded-bootstrap"
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
-  bootstrapProton
+
+  # no proton bootstrap needed
 
   initCrontab
   supervisorctl start enshrouded-updater
   info "Bootstrap complete"
-}
-
-bootstrapProton() {
-  info "bootstrap proton wine"
-  export WINEPREFIX=$WINEPREFIX
-  export WINEARCH=$WINEARCH
-  export WINEPATH=$WINEPATH
-  export WINEDEBUG=$WINEDEBUG
-
-  debug "winecfg"
-  winecfg -v win11 >/dev/null 2>&1
-  debug "wineboot"
-  wineboot -u >/dev/null 2>&1
-
-  fixSteamClient
-
-  info "proton bootstrap finished"
-}
-
-fixSteamClient() {
-  info "prepare steamclient for proton"
-  mkdir -p ~/.steam/sdk64/
-  $steamcmd_path +login anonymous +app_update 1007 +quit
-  cp ~/Steam/steamapps/common/Steamworks\ SDK\ Redist/linux64/steamclient.so ~/.steam/sdk64/
 }
 
 main

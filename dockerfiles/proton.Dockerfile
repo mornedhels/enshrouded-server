@@ -32,9 +32,11 @@ RUN curl -sLOJ "$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge
     && dbus-uuidgen --ensure=/etc/machine-id
 
 # MISC
-RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam \
+RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam/sdk32 /home/enshrouded/.steam/sdk64 \
     && groupadd -g "${PGID:-4711}" -o enshrouded \
     && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home enshrouded \
+    && ln -f /root/.steam/sdk32/steamclient.so /home/enshrouded/.steam/sdk32/steamclient.so \
+    && ln -f /root/.steam/sdk64/steamclient.so /home/enshrouded/.steam/sdk64/steamclient.so \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
