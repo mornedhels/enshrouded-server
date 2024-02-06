@@ -18,7 +18,7 @@ downloadEnshrouded() {
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
   export STEAM_DIR="/home/enshrouded/.steam/steam/"
 
-  $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update 1007 +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
+  $steamcmd_path +@sSteamCmdForcePlatformType windows +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
 }
 
 checkForUpdates() {
