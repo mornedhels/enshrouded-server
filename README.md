@@ -40,14 +40,13 @@ see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/160554414
 
 ### Additional Information
 
-* STEAM_API_KEY is only needed for the update cron, to check if the server is empty. You can get a key from
-  [Steam](https://steamcommunity.com/dev/apikey). If not supplied, the check will be skipped.
+* \-
 
 ### Hooks
 
 | Variable           | Description                            | WIP |
 |--------------------|----------------------------------------|:---:|
-| `BOOTSTRAP_HOOK`   | Command to run after generel bootstrap | ⚠️  |
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap | ⚠️  |
 | `UPDATE_POST_HOOK` | Command to run after update            | ⚠️  |
 
 The scripts will wait for the hook to resolve/return before continuing.
@@ -84,7 +83,11 @@ the environment variables `PUID` and `PGID`.
 
 ## Recommended System Requirements
 
-[Official Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055628734109-Recommended-Server-Specifications)
+* CPU: >= 6 cores
+* RAM: >= 16 GB
+* Disk: >= 30 GB (preferably SSD)
+
+**[Official Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055628734109-Recommended-Server-Specifications)**
 
 ## Usage
 
