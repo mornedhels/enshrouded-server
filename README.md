@@ -38,6 +38,10 @@ see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/160554414
 
 ⚠️: Work in Progress
 
+### Game Version Updates
+
+During automatic updates you need about double the storage to house the update files.
+
 ### Additional Information
 
 * STEAM_API_KEY is only needed for the update cron, to check if the server is empty. You can get a key from
