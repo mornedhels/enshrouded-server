@@ -65,8 +65,12 @@ verifyCpuMhz() {
 checkServerEmpty() {
   local connected_players
 
-  if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
-    return 0
+  if [ -n "$STEAM_API_PUBLIC_IP" ] && [ -n "$STEAM_API_KEY" ]; then
+    warn "STEAM_API_PUBLIC_IP and STEAM_API_KEY are deprecated and will be removed in a future release"
+  else
+    if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
+      return 0
+    fi
   fi
 
   connected_players=$(python3 -c "
