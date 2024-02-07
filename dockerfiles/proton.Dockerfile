@@ -22,11 +22,14 @@ RUN dpkg --add-architecture i386 \
         dbus \
         libfreetype6 \
         libfreetype6:i386 \
-        gnutls-bin
+        gnutls-bin \
+    && apt autoremove --purge && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install winetricks (unused)
 RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
-    && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks
+    && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks \
+    && rm -rf /tmp/*
 
 # install proton
 RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}.tar.gz" \
@@ -42,7 +45,6 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/e
     && ln -f /root/.steam/sdk32/steamclient.so /home/enshrouded/.steam/sdk32/steamclient.so \
     && ln -f /root/.steam/sdk64/steamclient.so /home/enshrouded/.steam/sdk64/steamclient.so \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
-    && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY ../supervisord.conf /etc/supervisor/supervisord.conf
