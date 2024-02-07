@@ -1,6 +1,8 @@
 FROM steamcmd/steamcmd:ubuntu-22@sha256:7341d241fd49f9371d31a9e2842d9a045d7a074f9e4c8c8d5a392bd8869f5e9d
 LABEL maintainer="docker@mornedhels.de"
 
+ARG GE_PROTON_VERSION="8-30"
+
 # Install prerequisites
 RUN dpkg --add-architecture i386 \
     && apt-get update \
@@ -27,7 +29,7 @@ RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetri
     && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks
 
 # install proton
-RUN curl -sLOJ "$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep browser_download_url | cut -d\" -f4 | grep .tar.gz)" \
+RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}.tar.gz" \
     && tar -xzf GE-Proton*.tar.gz -C /usr/local/bin/ --strip-components=1 \
     && rm GE-Proton*.* \
     && rm -f /etc/machine-id \
