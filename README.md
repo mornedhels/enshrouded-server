@@ -33,14 +33,14 @@ updates and cleanup.
 | `GAME_BRANCH`          |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`        |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 
-All environment Variables prefixed with SERVER, are the available enshrouded_server.json options (
-see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
+All environment Variables prefixed with SERVER, are the available enshrouded_server.json options 
+(see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
 
 ⚠️: Work in Progress
 
 ### Additional Information
 
-* \-
+* During the update process, the container temporarily requires more disk space (up to 2x the game size).
 
 ### Hooks
 
