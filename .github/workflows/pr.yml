@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: generate token for automerge
         id: automerge-app-token
-        uses: getsentry/action-github-app-token@v2
+        uses: getsentry/action-github-app-token@v3
         with:
           app_id: ${{ secrets.AUTOMERGE_APP_ID }}
           private_key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
