@@ -30,6 +30,7 @@ update() {
 }
 
 doUpdate() {
+  updatePreHook
   if checkRunning "enshrouded-server"; then
     supervisorctl stop enshrouded-server
   fi
@@ -97,6 +98,13 @@ setCurrentVersion() {
   fi
   debug "[setCurrentVersion]: $latest_version"
   echo "$latest_version" >"$version_file_path"
+}
+
+updatePreHook() {
+  if [ -n "$UPDATE_PRE_HOOK" ]; then
+    info "Running update post hook: $UPDATE_PRE_HOOK"
+    eval "$UPDATE_PRE_HOOK"
+  fi
 }
 
 updatePostHook() {
