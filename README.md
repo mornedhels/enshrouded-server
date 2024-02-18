@@ -58,15 +58,16 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 ## Image Tags
 
-| Tag                | Virtualization | Description                  |
-|--------------------|----------------|------------------------------|
-| `latest`           | wine           | Latest image based on wine   |
-| `stable-wine`      | wine           | Same as latest image         |
-| `<version>-wine`   | wine           | Pinned image based on wine   |
-| `stable-proton`    | proton         | Latest image based on proton |
-| `<version>-proton` | proton         | Pinned image based on proton |
-| `dev`              | wine           | Dev build based on wine      |
-| `dev-proton`       | proton         | Dev build based on proton    |
+| Tag                | Virtualization | Description                             |
+|--------------------|----------------|-----------------------------------------|
+| `latest`           | proton         | Latest image based on proton            |
+| `<version>`        | proton         | Pinned image based on proton (>= 1.x.x) |
+| `stable-proton`    | proton         | Same as latest image                    |
+| `<version>-proton` | proton         | Pinned image based on proton            |
+| `stable-wine`      | wine           | Latest image based on wine              |
+| `<version>-wine`   | wine           | Pinned image based on wine              |
+| `dev`              | wine           | Dev build based on wine                 |
+| `dev-proton`       | proton         | Dev build based on proton               |
 
 ## Ports (default)
 
