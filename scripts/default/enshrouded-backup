@@ -37,6 +37,7 @@ prepareBackup() {
 backupAndCleanup() {
   backup
   cleanup
+  backupPostHook
   clearLock "$pidfile"
 }
 
@@ -64,6 +65,7 @@ backup() {
 
   backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
 
+  backupPreHook
   info "Backing up save file to $backup_dir/$backup_file_name"
   debug "zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup""
   zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup"
@@ -98,6 +100,20 @@ getBackupDir() {
     backup_dir="$BACKUP_DIR"
   else
     backup_dir="$install_path/$BACKUP_DIR"
+  fi
+}
+
+backupPreHook() {
+  if [ -n "$BACKUP_PRE_HOOK" ]; then
+    info "Running update post hook: $BACKUP_PRE_HOOK"
+    eval "$BACKUP_PRE_HOOK"
+  fi
+}
+
+backupPostHook() {
+  if [ -n "$BACKUP_POST_HOOK" ]; then
+    info "Running update post hook: $BACKUP_POST_HOOK"
+    eval "$BACKUP_POST_HOOK"
   fi
 }
 

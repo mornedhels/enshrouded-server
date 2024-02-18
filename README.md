@@ -47,7 +47,10 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 | Variable           | Description                            | WIP |
 |--------------------|----------------------------------------|:---:|
 | `BOOTSTRAP_HOOK`   | Command to run after general bootstrap | ⚠️  |
+| `UPDATE_PRE_HOOK`  | Command to run before update           | ⚠️  |
 | `UPDATE_POST_HOOK` | Command to run after update            | ⚠️  |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup | ⚠️  |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  | ⚠️  |
 
 The scripts will wait for the hook to resolve/return before continuing.
 
