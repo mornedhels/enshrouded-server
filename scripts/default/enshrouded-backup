@@ -21,7 +21,7 @@ prepareBackup() {
   getSaveDir
   getBackupDir
 
-  if [ ! -f "$save_dir/$savefile_name" ]; then
+  if [ ! -f "$save_dir/$savefile_name-index" ]; then
     warn "Save file not found - aborting backup"
     return
   fi
@@ -42,33 +42,42 @@ backupAndCleanup() {
 }
 
 backup() {
-  local backup_file_name
+  local latest_save_index latest_savefile_name backup_file_name
   debug "run backup"
 
-  # check if save file is older than 6 minutes
-  if [ $(($(date +%s) - $(stat -c %X "$save_dir/$savefile_name"))) -gt 360 ]; then
-    info "Save file is older than 6 minutes - server is probably just starting up - skipping backup"
+  # parse 3ad85aea-index (json) to get latest save file
+  latest_save_index=$(jq -r '.latest' "$save_dir/$savefile_name-index")
+
+  # if index = 0 save game is just $savefile_name otherwise $savefile_name-$index
+  if [ "$latest_save_index" -eq 0 ]; then
+    latest_savefile_name="$savefile_name"
+  else
+    latest_savefile_name="$savefile_name-$latest_save_index"
+  fi
+
+  # check if latest save file exists
+  if [ ! -f "$save_dir/$latest_savefile_name" ]; then
+    warn "Latest save file not found - aborting backup"
     return
   fi
 
-  # check last access time > 4 minutes wait for 90 seconds
-  if [ $(($(date +%s) - $(stat -c %X "$save_dir/$savefile_name"))) -gt 240 ]; then
-    info "Save file is older than 4 minutes - waiting for 90 seconds to ensure save is complete"
-    sleep 90
-  fi
+  backupPreHook
 
-  # check if file is still being written to with lsof
-  while [ -n "$(lsof -t "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup")" ]; do
-    info "Save file is still being written to - waiting for 5 seconds to ensure save is complete"
-    sleep 5
-  done
+  # create new index file
+  cat > /tmp/$savefile_name-index <<EOF
+  {
+    "latest": 0,
+    "time": $(jq -r '.time' "$save_dir/$savefile_name-index"),
+    "deleted": false
+  }
+EOF
 
   backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
-
-  backupPreHook
   info "Backing up save file to $backup_dir/$backup_file_name"
-  debug "zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup""
-  zip -j "$backup_dir/$backup_file_name" "$save_dir/$savefile_name" "$save_dir/$savefile_name.backup"
+  debug "zip -j \"$backup_dir/$backup_file_name\" \"$save_dir/$latest_savefile_name\" \"/tmp/$savefile_name-index\""
+  zip -j "$backup_dir/$backup_file_name" "$save_dir/$latest_savefile_name" /tmp/$savefile_name-index
+  debug "echo -ne \"@ $latest_savefile_name\n@=$savefile_name\n\" | zipnote -w \"$backup_dir/$backup_file_name\""
+  echo -ne "@ $latest_savefile_name\n@=$savefile_name\n" | zipnote -w "$backup_dir/$backup_file_name"
 }
 
 cleanup() {

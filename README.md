@@ -33,7 +33,7 @@ updates and cleanup.
 | `GAME_BRANCH`          |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`        |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 
-All environment Variables prefixed with SERVER, are the available enshrouded_server.json options 
+All environment Variables prefixed with SERVER, are the available enshrouded_server.json options
 (see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
 
 ⚠️: Work in Progress
@@ -139,7 +139,6 @@ services:
 location (eg. /var/lib/docker) you can use the following compose file:
 
 ```yaml
-version: "3"
 services:
   enshrouded:
     image: mornedhels/enshrouded-server:latest
@@ -161,6 +160,19 @@ services:
 volumes:
   game:
 ```
+
+## Backup
+
+The image includes a backup script that creates a zip file of the last saved game state. To enable backups, set
+the `BACKUP_CRON` environment variable. To limit the number of backups, set the `BACKUP_MAX_COUNT` environment variable.
+
+To restore a backup, stop the server and simply extract the zip file to the savegame folder and start the server up
+again. If you want to keep the current savegame, make sure to make a backup before deleting or overwriting the files.
+
+> [!WARNING]  
+> Verify the permissions of the extracted files. The files should be owned by the user with the UID and GID set in the
+> environment variables. If the image is running in privileged mode, the files will be automatically chowned to the
+> given `UID` and `GID`.
 
 ## Commands
 
