@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:ubuntu-22@sha256:33007178afdd812d97d44c8e384c1ea302769823f3ef9f8f6db9206fb08e63a0
+FROM steamcmd/steamcmd:ubuntu-24@sha256:97bd5556dae55ed91dca6660dc4e01bca19a109a71c41f9757c8a387aee0225c
 LABEL maintainer="docker@mornedhels.de"
 
 # Install prerequisites
@@ -24,7 +24,7 @@ RUN dpkg --add-architecture i386 \
     && mkdir -pm755 /etc/apt/keyrings \
     && curl -o /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
     && curl -O --output-dir /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2)/winehq-$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2).sources \
-    && apt update && DEBIAN_FRONTEND="noninteractive" apt -y --install-recommends install winehq-${WINE_BRANCH} \
+    && apt update && DEBIAN_FRONTEND="noninteractive" apt -y --install-recommends install wine-${WINE_BRANCH} \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
