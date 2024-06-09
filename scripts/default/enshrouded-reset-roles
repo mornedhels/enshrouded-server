@@ -1,0 +1,16 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+main() {
+  info "Stopping enshrouded server"
+  supervisorctl stop enshrouded-server
+
+  info "Reset enshrouded server roles"
+  echo "$(jq 'del(.userGroups)' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+
+  info "Stop container for a clean start"
+  kill -INT $(cat /var/run/supervisord.pid)
+}
+
+main
