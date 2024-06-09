@@ -18,7 +18,6 @@ updates and cleanup.
 | `SERVER_NAME`          |          | `Enshrouded Server` | string                | The name of the server                                                                                             |  ️  |
 | `SERVER_PASSWORD`      |          |                     | string                | The password for the server                                                                                        |     |
 | `SERVER_SLOT_COUNT`    |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
-| `SERVER_PORT`          |          | `15636`             | integer               | The game port for the server                                                                                       |     |
 | `SERVER_QUERYPORT`     |          | `15637`             | integer               | The steam query port for the server                                                                                |     |
 | `SERVER_IP`            |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                       |     |
 | `SERVER_SAVE_DIR`      |          | `./savegame`        | string                | Folder for savegames (relative and absolute paths are supported)                                                   |     |
@@ -41,16 +40,19 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 ### Additional Information
 
 * During the update process, the container temporarily requires more disk space (up to 2x the game size).
+* Server role configuration can be done via the `enshrouded_server.json` file. The file is located in the `game/server`
+  folder. More information can be found in
+  the [official documentation](https://enshrouded.zendesk.com/hc/en-us/articles/19191581489309-Server-Roles-Configuration).
 
 ### Hooks
 
 | Variable           | Description                            | WIP |
 |--------------------|----------------------------------------|:---:|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap | ⚠️  |
-| `UPDATE_PRE_HOOK`  | Command to run before update           | ⚠️  |
-| `UPDATE_POST_HOOK` | Command to run after update            | ⚠️  |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup | ⚠️  |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  | ⚠️  |
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |     |
+| `UPDATE_PRE_HOOK`  | Command to run before update           |     |
+| `UPDATE_POST_HOOK` | Command to run after update            |     |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |     |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |     |
 
 The scripts will wait for the hook to resolve/return before continuing.
 
@@ -74,7 +76,6 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 | Port      | Description      |
 |-----------|------------------|
-| 15636/udp | Game port        |
 | 15637/udp | Steam query port |
 
 ## Volumes
@@ -102,7 +103,7 @@ the environment variables `PUID` and `PGID`.
 docker run -d --name enshrouded \
   --hostname enshrouded \
   --restart=unless-stopped \
-  -p 15636-15637:15636-15637/udp \
+  -p 15637:15637/udp \
   -v ./game:/opt/enshrouded \
   -e SERVER_NAME="Enshrouded Server" \
   -e SERVER_PASSWORD="secret" \
@@ -124,7 +125,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "15636-15637:15636-15637/udp"
+      - "15637:15637/udp"
     volumes:
       - ./game:/opt/enshrouded
     environment:
