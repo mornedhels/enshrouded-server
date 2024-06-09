@@ -24,7 +24,7 @@ initCrontab() {
 }
 
 prepareSteamA2sPythonLibrary() {
-  pip3 install python-a2s==1.3.0
+  pip3 install python-a2s==1.3.0 --break-system-packages
 }
 
 bootstrapHook() {
@@ -48,7 +48,6 @@ updateOrCreateEnshroudedServerConfig() {
   "saveDirectory": "./savegame",
   "logDirectory": "./logs",
   "ip": "0.0.0.0",
-  "gamePort": 15636,
   "queryPort": 15637,
   "slotCount": 16
 }
@@ -75,10 +74,6 @@ EOF
     echo "$(jq --arg ip "$SERVER_IP" '.ip = $ip' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
-  if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --argjson gamePort "$SERVER_PORT" '.gamePort = $gamePort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
   if [[ -n "$SERVER_QUERYPORT" ]]; then
     echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
@@ -86,4 +81,63 @@ EOF
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
     echo "$(jq --argjson slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
+
+  updateUserGroupConfig
+}
+
+updateUserGroupConfig() {
+  local group_count group_index group_param group_value
+  # get largest group index of env vars
+  group_count=$(compgen -A variable | grep -E "^SERVER_ROLE_[0-9]+_" | cut -d'_' -f3 | sort -nr | head -n1)
+
+  # check if userGroups array exists if not create empty array
+  if ! jq -e 'has("userGroups")' ${install_path}/enshrouded_server.json >/dev/null; then
+    debug "userGroups array does not exist, creating empty array"
+    echo "$(jq '.userGroups = []' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  # add missing groups
+  for group_index in $(seq 0 $group_count); do
+    if ! jq -e --argjson group_index "$group_index" '.userGroups | has($group_index)' ${install_path}/enshrouded_server.json >/dev/null; then
+      debug "group $group_index does not exist, creating default group"
+      echo "$(jq --argjson group_index "$group_index" '.userGroups += [{"name": "Default", "password": "", "canKickBan": false, "canAccessInventories": false, "canEditBase": false, "canExtendBase": false, "reservedSlots": 0}]' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    fi
+  done
+
+  for i in $(compgen -A variable | grep -E "^SERVER_ROLE_[0-9]+_"); do
+    group_index=$(echo $i | cut -d'_' -f3)
+    group_param=$(echo $i | cut -d'_' -f4-)
+    group_value=$(eval echo \$$i)
+
+    case $group_param in
+      NAME)
+        debug "updating group $group_index name to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --arg name "$group_value" '.userGroups[$group_index].name = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      PASSWORD)
+        debug "updating group $group_index password to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --arg password "$group_value" '.userGroups[$group_index].password = $password' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      CAN_KICK_BAN)
+        debug "updating group $group_index canKickBan to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson canKickBan "$group_value" '.userGroups[$group_index].canKickBan = $canKickBan' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      CAN_ACCESS_INVENTORIES)
+        debug "updating group $group_index canAccessInventories to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson canAccessInventories "$group_value" '.userGroups[$group_index].canAccessInventories = $canAccessInventories' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      CAN_EDIT_BASE)
+        debug "updating group $group_index canEditBase to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson canEditBase "$group_value" '.userGroups[$group_index].canEditBase = $canEditBase' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      CAN_EXTEND_BASE)
+        debug "updating group $group_index canExtendBase to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson canExtendBase "$group_value" '.userGroups[$group_index].canExtendBase = $canExtendBase' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+      RESERVED_SLOTS)
+        debug "updating group $group_index reservedSlots to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson reservedSlots "$group_value" '.userGroups[$group_index].reservedSlots = $reservedSlots' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
+    esac
+  done
 }

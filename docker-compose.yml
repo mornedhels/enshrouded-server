@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "15636-15637:15636-15637/udp"
+      - "15637:15637/udp"
     volumes:
       - ./game:/opt/enshrouded
     environment:
