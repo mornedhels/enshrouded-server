@@ -48,8 +48,8 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 ### Additional Information
 
 * During the update process, the container temporarily requires more disk space (up to 2x the game size).
-* Server role configuration can be done via the `enshrouded_server.json` file. The file is located in the `game/server`
-  folder. More information can be found in
+* Server role configuration can be done via the `enshrouded_server.json` file directly or the `SERVER_ROLE_<index>_XYZ`
+  environment vars. The file is located in the `game/server` folder. More information can be found in
   the [official documentation](https://enshrouded.zendesk.com/hc/en-us/articles/19191581489309-Server-Roles-Configuration).
 
 ### Hooks
