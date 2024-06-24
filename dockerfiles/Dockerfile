@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:ubuntu-24@sha256:8f096321598cca0bd25401024beaf1ac403c95aa1b72aa0fa583575ca78c5c91
+FROM steamcmd/steamcmd:ubuntu-24@sha256:2731d053cde5f9b09d697f550b031792409a71e294b3ab8970fe58848c0439f7
 LABEL maintainer="docker@mornedhels.de"
 
 # Install prerequisites
