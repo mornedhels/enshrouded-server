@@ -102,7 +102,7 @@ setCurrentVersion() {
 
 updatePreHook() {
   if [ -n "$UPDATE_PRE_HOOK" ]; then
-    info "Running update post hook: $UPDATE_PRE_HOOK"
+    info "Running update pre hook: $UPDATE_PRE_HOOK"
     eval "$UPDATE_PRE_HOOK"
   fi
 }
