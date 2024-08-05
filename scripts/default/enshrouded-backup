@@ -114,14 +114,14 @@ getBackupDir() {
 
 backupPreHook() {
   if [ -n "$BACKUP_PRE_HOOK" ]; then
-    info "Running update post hook: $BACKUP_PRE_HOOK"
+    info "Running backup pre hook: $BACKUP_PRE_HOOK"
     eval "$BACKUP_PRE_HOOK"
   fi
 }
 
 backupPostHook() {
   if [ -n "$BACKUP_POST_HOOK" ]; then
-    info "Running update post hook: $BACKUP_POST_HOOK"
+    info "Running backup post hook: $BACKUP_POST_HOOK"
     eval "$BACKUP_POST_HOOK"
   fi
 }
