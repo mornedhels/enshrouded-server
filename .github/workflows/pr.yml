@@ -19,6 +19,6 @@ jobs:
           app_id: ${{ secrets.AUTOMERGE_APP_ID }}
           private_key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
       - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge ${{github.event.pull_request.html_url}} --auto --merge
+        run: gh pr merge ${{github.event.pull_request.html_url}} --auto --rebase
         env:
           GITHUB_TOKEN: ${{ steps.automerge-app-token.outputs.token }}
