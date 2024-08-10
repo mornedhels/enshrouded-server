@@ -1,7 +1,7 @@
 FROM steamcmd/steamcmd:ubuntu-24@sha256:3014605f8d26fb775d60cf161d7c42657cc4aa1b3ea27913d23b4e79132f03ab
 LABEL maintainer="docker@mornedhels.de"
 
-ARG GE_PROTON_VERSION="9-7"
+ARG GE_PROTON_VERSION="9-11"
 
 # Install prerequisites
 RUN dpkg --add-architecture i386 \
