@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/proton.Dockerfile
-      args:
-        WINE_BRANCH: stable
     image: mornedhels/enshrouded-server:dev-proton
     container_name: enshrouded
     hostname: enshrouded
