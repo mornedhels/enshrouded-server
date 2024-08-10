@@ -45,15 +45,89 @@
 >
 > You can also adjust the settings directly in the `enshrouded_server.json` file.
 
-## Example Configuration File
+## Example Usage
+
+<details><summary>Expand</summary>
+
+With environment variables:
+
+```yaml
+services:
+  enshrouded:
+    image: mornedhels/enshrouded-server:latest
+    container_name: enshrouded
+    hostname: enshrouded
+    restart: unless-stopped
+    stop_grace_period: 90s
+    ports:
+      - "15637:15637/udp"
+    volumes:
+      - ./game:/opt/enshrouded
+    environment:
+      - SERVER_NAME=Enshrouded Server
+      - SERVER_ROLE_0_NAME=Default
+      - SERVER_ROLE_0_PASSWORD=secret123
+      - SERVER_GS_PRESET=Custom
+      - SERVER_GS_PLAYER_HEALTH_FACTOR=2
+      - SERVER_GS_PLAYER_MANA_FACTOR=2
+      - SERVER_GS_PLAYER_STAMINA_FACTOR=2
+      - SERVER_GS_ENABLE_DURABILITY=true
+      - SERVER_GS_ENABLE_STARVING_DEBUFF=false
+      - SERVER_GS_FOOD_BUFF_DURATION_FACTOR=1
+      - SERVER_GS_FROM_HUNGER_TO_STARVING=600000000000
+      - SERVER_GS_SHROUD_TIME_FACTOR=1
+      - SERVER_GS_RANDOM_SPAWNER_AMOUNT=Normal
+      - SERVER_GS_MINING_DAMAGE_FACTOR=1
+      - SERVER_GS_PLANT_GROWTH_SPEED_FACTOR=1
+      - SERVER_GS_RESOURCE_DROP_STACK_AMOUNT_FACTOR=1
+      - SERVER_GS_FACTORY_PRODUCTION_SPEED_FACTOR=1
+      - SERVER_GS_PERK_UPGRADE_RECYCLING_FACTOR=0.5
+      - SERVER_GS_PERK_COST_FACTOR=1
+      - SERVER_GS_EXPERIENCE_COMBAT_FACTOR=1
+      - SERVER_GS_EXPERIENCE_MINING_FACTOR=1
+      - SERVER_GS_EXPERIENCE_EXPLORATION_QUESTS_FACTOR=1
+      - SERVER_GS_AGGRO_POOL_AMOUNT=Normal
+      - SERVER_GS_ENEMY_DAMAGE_FACTOR=1
+      - SERVER_GS_ENEMY_HEALTH_FACTOR=1
+      - SERVER_GS_ENEMY_STAMINA_FACTOR=1
+      - SERVER_GS_ENEMY_PERCEPTION_RANGE_FACTOR=1
+      - SERVER_GS_BOSS_DAMAGE_FACTOR=1
+      - SERVER_GS_BOSS_HEALTH_FACTOR=1
+      - SERVER_GS_THREAT_BONUS=1
+      - SERVER_GS_PACIFY_ALL_ENEMIES=false
+      - SERVER_GS_DAY_TIME_DURATION=1800000000000
+      - SERVER_GS_NIGHT_TIME_DURATION=720000000000
+      - SERVER_GS_TOMBSTONE_MODE=AddBackpackMaterials
+      
+```
+
+Creates the following `enshrouded_server.json` file:
 
 ```json
 {
-  "gameSettingsPreset": "Default",
+  "name": "Enshrouded Server",
+  "password": "",
+  "saveDirectory": "./savegame",
+  "logDirectory": "./logs",
+  "ip": "0.0.0.0",
+  "queryPort": 15637,
+  "slotCount": 16,
+  "userGroups": [
+    {
+      "name": "Custom",
+      "password": "secret123",
+      "canKickBan": false,
+      "canAccessInventories": false,
+      "canEditBase": false,
+      "canExtendBase": false,
+      "reservedSlots": 0
+    }
+  ],
+  "gameSettingsPreset": "Custom",
   "gameSettings": {
-    "playerHealthFactor": 1,
-    "playerManaFactor": 1,
-    "playerStaminaFactor": 1,
+    "playerHealthFactor": 2,
+    "playerManaFactor": 2,
+    "playerStaminaFactor": 2,
     "enableDurability": true,
     "enableStarvingDebuff": false,
     "foodBuffDurationFactor": 1,
@@ -64,7 +138,7 @@
     "plantGrowthSpeedFactor": 1,
     "resourceDropStackAmountFactor": 1,
     "factoryProductionSpeedFactor": 1,
-    "perkUpgradeRecyclingFactor": 0.500000,
+    "perkUpgradeRecyclingFactor": 0.5,
     "perkCostFactor": 1,
     "experienceCombatFactor": 1,
     "experienceMiningFactor": 1,
@@ -84,3 +158,5 @@
   }
 }
 ```
+
+</details>
