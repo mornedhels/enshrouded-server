@@ -35,7 +35,7 @@ runServer() {
   export WINEDEBUG=$WINEDEBUG
 
   chmod +x "$enshrouded_server"
-  wine64 "$enshrouded_server" &
+  wine "$enshrouded_server" &
   enshrouded_server_pid=$!
   echo $enshrouded_server_pid >"$enshrouded_server_pidfile"
 
