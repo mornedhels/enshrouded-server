@@ -9,6 +9,8 @@ prepareEnshroudedAppFolders() {
 initCrontab() {
   crontab=$(mktemp)
 
+  crontab -l >"$crontab" 2>/dev/null
+
   if [ -n "$UPDATE_CRON" ]; then
     debug "creating cron for update checks (schedule: $UPDATE_CRON)"
     echo "$UPDATE_CRON supervisorctl start enshrouded-updater >/dev/null 2>&1" >>"$crontab"
