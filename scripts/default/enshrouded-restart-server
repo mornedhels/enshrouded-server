@@ -1,0 +1,13 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+main() {
+  info "Stopping enshrouded server"
+  supervisorctl stop enshrouded-server
+
+  info "Stop container for a clean start"
+  kill -INT $(cat /var/run/supervisord.pid)
+}
+
+main
