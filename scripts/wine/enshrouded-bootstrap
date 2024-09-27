@@ -8,11 +8,11 @@ main() {
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
   prepareSteamA2sPythonLibrary
-  bootstrapHook
 
   bootstrapWine
 
   initCrontab
+  bootstrapHook
   supervisorctl start enshrouded-updater
   info "Bootstrap complete"
 }

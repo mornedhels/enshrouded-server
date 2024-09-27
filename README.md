@@ -186,6 +186,10 @@ again. If you want to keep the current savegame, make sure to make a backup befo
   ```bash
   docker compose exec enshrouded supervisorctl start enshrouded-reset-roles
   ```
+* **Restart Enshrouded Server:** (can be used for periodic restarts)
+  ```bash
+  docker compose exec enshrouded supervisorctl restart enshrouded-server
+  ```
 
 ## Known Issues
 
@@ -193,5 +197,5 @@ again. If you want to keep the current savegame, make sure to make a backup befo
   ```
   Error! App '2278520' state is 0x202 after update job.
   ```
-  This means there is probably something wrong with your file permissions. Make sure the UID and GID are correct and the
-  files are owned by the correct user.
+  This means there is probably something wrong with your file permissions, or you don't have enough disk space left.
+  Make sure the UID and GID are correct and the files are owned by the correct user.
