@@ -8,11 +8,11 @@ main() {
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
   prepareSteamA2sPythonLibrary
-  bootstrapHook
 
   # no proton bootstrap needed
 
   initCrontab
+  bootstrapHook
   supervisorctl start enshrouded-updater
   info "Bootstrap complete"
 }
