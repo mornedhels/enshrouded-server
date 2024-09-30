@@ -16,7 +16,6 @@ updates and cleanup.
 | Variable                                             | Required | Default             | Contraints            | Description                                                                                                        | WIP | 
 |------------------------------------------------------|:--------:|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|:---:|
 | `SERVER_NAME`                                        |          | `Enshrouded Server` | string                | The name of the server                                                                                             |  ️  |
-| `SERVER_PASSWORD`                                    |          |                     | string                | The password for the server                                                                                        |     |
 | `SERVER_SLOT_COUNT`                                  |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
 | `SERVER_QUERYPORT`                                   |          | `15637`             | integer               | The steam query port for the server                                                                                |     |
 | `SERVER_IP`                                          |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                       |     |
@@ -31,6 +30,7 @@ updates and cleanup.
 | `BACKUP_MAX_COUNT`                                   |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
 | `GAME_BRANCH`                                        |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`                                      |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
+| `SERVER_PASSWORD` ⚠️DEPRECATED                       |          |                     | string                | ⚠️ DEPRECATED: The password for the server (Enshrouded ignores this value - use Server Roles instead)              |     |
 | **[Server Roles](./docs/SERVER_ROLES.md)**           |          |                     |                       | further informations can be found following the link                                                               |     |
 | **[Server Difficulty](./docs/SERVER_DIFFICULTY.md)** |          |                     |                       | further informations can be found following the link                                                               | ⚠️  |
 
