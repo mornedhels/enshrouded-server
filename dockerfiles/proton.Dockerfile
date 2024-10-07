@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:ubuntu-24@sha256:7423974315bfa7b5c0e2b7ee40c536c1ec471d356534ae302e217eabaa151512
+FROM steamcmd/steamcmd:ubuntu-24@sha256:a102f39b96eff0e6f5009c5579028bafba696115ab23f9811dc3668ad2373ead
 LABEL maintainer="docker@mornedhels.de"
 
 ARG GE_PROTON_VERSION="9-14"
