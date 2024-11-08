@@ -164,6 +164,11 @@ updateGameSettingsConfig() {
     echo "$(jq --argjson factor "$SERVER_GS_PLAYER_STAMINA_FACTOR" '.gameSettings.playerStaminaFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
+  if [[ -n "$SERVER_GS_PLAYER_BODY_HEAT_FACTOR" ]]; then
+    debug "updating gameSettingsPlayerBodyHeatFactor to $SERVER_GS_PLAYER_BODY_HEAT_FACTOR"
+    echo "$(jq --argjson factor "$SERVER_GS_PLAYER_BODY_HEAT_FACTOR" '.gameSettings.playerBodyHeatFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
   if [[ -n "$SERVER_GS_ENABLE_DURABILITY" ]]; then
     debug "updating gameSettingsEnableDurability to $SERVER_GS_ENABLE_DURABILITY"
     echo "$(jq --argjson bool "$SERVER_GS_ENABLE_DURABILITY" '.gameSettings.enableDurability = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
@@ -187,6 +192,16 @@ updateGameSettingsConfig() {
   if [[ -n "$SERVER_GS_SHROUD_TIME_FACTOR" ]]; then
     debug "updating gameSettingsShroudTimeFactor to $SERVER_GS_SHROUD_TIME_FACTOR"
     echo "$(jq --argjson factor "$SERVER_GS_SHROUD_TIME_FACTOR" '.gameSettings.shroudTimeFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_GS_ENABLE_GLIDER_TURBULENCES" ]]; then
+    debug "updating gameSettingsEnableGliderTurbulences to $SERVER_GS_ENABLE_GLIDER_TURBULENCES"
+    echo "$(jq --argjson bool "$SERVER_GS_ENABLE_GLIDER_TURBULENCES" '.gameSettings.enableGliderTurbulences = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_GS_WEATHER_FREQUENCY" ]]; then
+    debug "updating gameSettingsWeatherFrequency to $SERVER_GS_WEATHER_FREQUENCY"
+    echo "$(jq --arg name "$SERVER_GS_WEATHER_FREQUENCY" '.gameSettings.weatherFrequency = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_GS_RANDOM_SPAWNER_AMOUNT" ]]; then
@@ -282,6 +297,11 @@ updateGameSettingsConfig() {
   if [[ -n "$SERVER_GS_PACIFY_ALL_ENEMIES" ]]; then
     debug "updating gameSettingsPacifyAllEnemies to $SERVER_GS_PACIFY_ALL_ENEMIES"
     echo "$(jq --argjson bool "$SERVER_GS_PACIFY_ALL_ENEMIES" '.gameSettings.pacifyAllEnemies = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_GS_TAMING_STARTLE_REPERCUSSION" ]]; then
+    debug "updating gameSettingsTamingStartleRepercussion to $SERVER_GS_TAMING_STARTLE_REPERCUSSION"
+    echo "$(jq --arg name "$SERVER_GS_TAMING_STARTLE_REPERCUSSION" '.gameSettings.tamingStartleRepercussion = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_GS_DAY_TIME_DURATION" ]]; then
