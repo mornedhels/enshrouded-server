@@ -22,28 +22,32 @@ jobs:
       image-name: enshrouded-server
       image-tag: dev-proton
       dockerfile: dockerfiles/proton.Dockerfile
-      trivy-scan: false
+      scan-category: proton
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   build-wine-stable:
     uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
     with:
       image-name: enshrouded-server
       image-tag: dev-wine
       dockerfile: dockerfiles/Dockerfile
+      scan-category: wine-stable
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   build-wine-staging:
     uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
     with:
       image-name: enshrouded-server
       image-tag: dev-wine-staging
       dockerfile: dockerfiles/Dockerfile
+      scan-category: wine-staging
       build-args: |
         WINE_BRANCH=staging
-      trivy-scan: false
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   update-readme:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest

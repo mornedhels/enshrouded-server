@@ -12,6 +12,7 @@ jobs:
     with:
       image-name: enshrouded-server
       dockerfile: dockerfiles/proton.Dockerfile
+      scan-category: proton-latest
       image-tag: |
         ${{ github.event.release.tag_name }}
         ${{ github.event.release.tag_name }}-proton
@@ -19,16 +20,19 @@ jobs:
         latest
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   docker-build-wine:
     uses: mornedhels/workflow-center-public/.github/workflows/docker-build.yml@main
     with:
       image-name: enshrouded-server
       dockerfile: dockerfiles/Dockerfile
+      scan-category: wine-stable-latest
       image-tag: |
         ${{ github.event.release.tag_name }}-wine
         stable-wine
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   update-readme:
     runs-on: ubuntu-latest
     needs: [docker-build-proton,docker-build-wine]
