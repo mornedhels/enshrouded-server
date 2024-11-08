@@ -1,0 +1,23 @@
+name: Docker Scout Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * 5'
+  workflow_dispatch:
+
+jobs:
+  docker-scout-scan-latest:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-scout.yml@main
+    with:
+      image-name: enshrouded-server
+      scan-category: proton-latest
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  docker-scout-scan-dev:
+    uses: mornedhels/workflow-center-public/.github/workflows/docker-scout.yml@main
+    with:
+      image-name: enshrouded-server
+      image-tag: dev
+      scan-category: proton-dev
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
