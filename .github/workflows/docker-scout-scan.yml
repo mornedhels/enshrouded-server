@@ -17,7 +17,7 @@ jobs:
     uses: mornedhels/workflow-center-public/.github/workflows/docker-scout.yml@main
     with:
       image-name: enshrouded-server
-      image-tag: dev
+      image-tag: dev-proton
       scan-category: proton-dev
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
