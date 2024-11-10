@@ -1,28 +1,43 @@
-FROM steamcmd/steamcmd:ubuntu-24@sha256:1314c2ee778d3b7349a42b90745d688689e9a317dc405680be10e3cb537c9a85
-LABEL maintainer="docker@mornedhels.de"
+FROM steamcmd/steamcmd:ubuntu-24@sha256:1314c2ee778d3b7349a42b90745d688689e9a317dc405680be10e3cb537c9a85 as builder
 
-ARG GE_PROTON_VERSION="9-18"
+ARG GE_PROTON_VERSION="9-19"
 
 # Install prerequisites
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
-        cabextract \
         curl \
-        winbind \
+        tar \
+        dbus \
+    && apt autoremove --purge && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# install proton
+RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}.tar.gz" \
+    && mkdir -p /tmp/proton \
+    && tar -xzf GE-Proton*.tar.gz -C /tmp/proton --strip-components=1 \
+    && rm GE-Proton*.* \
+    && rm -f /etc/machine-id \
+    && dbus-uuidgen --ensure=/etc/machine-id
+
+
+FROM steamcmd/steamcmd:ubuntu-24@sha256:1314c2ee778d3b7349a42b90745d688689e9a317dc405680be10e3cb537c9a85
+LABEL maintainer="docker@mornedhels.de"
+
+# Install dependencies
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+        curl \
         supervisor \
         cron \
         rsyslog \
         jq \
-        lsof \
         zip \
         python3 \
         python3-pip \
-        tar \
-        dbus \
         libfreetype6 \
         libfreetype6:i386 \
-        gnutls-bin \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -30,13 +45,6 @@ RUN dpkg --add-architecture i386 \
 RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
     && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks \
     && rm -rf /tmp/*
-
-# install proton
-RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}.tar.gz" \
-    && tar -xzf GE-Proton*.tar.gz -C /usr/local/bin/ --strip-components=1 \
-    && rm GE-Proton*.* \
-    && rm -f /etc/machine-id \
-    && dbus-uuidgen --ensure=/etc/machine-id
 
 # MISC
 RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam/sdk32 /home/enshrouded/.steam/sdk64 \
@@ -46,6 +54,9 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/e
     && ln -f /root/.steam/sdk64/steamclient.so /home/enshrouded/.steam/sdk64/steamclient.so \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=builder /tmp/proton /usr/local/bin
+COPY --from=builder /etc/machine-id /etc/machine-id
 
 COPY ../supervisord.conf /etc/supervisor/supervisord.conf
 COPY --chmod=755 ../scripts/default/* ../scripts/proton/* /usr/local/etc/enshrouded/
