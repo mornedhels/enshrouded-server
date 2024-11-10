@@ -14,10 +14,10 @@ jobs:
       dockerfile: dockerfiles/proton.Dockerfile
       scan-category: proton-latest
       image-tag: |
+        latest
+        stable-proton
         ${{ github.event.release.tag_name }}
         ${{ github.event.release.tag_name }}-proton
-        stable-proton
-        latest
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
@@ -28,8 +28,8 @@ jobs:
       dockerfile: dockerfiles/Dockerfile
       scan-category: wine-stable-latest
       image-tag: |
-        ${{ github.event.release.tag_name }}-wine
         stable-wine
+        ${{ github.event.release.tag_name }}-wine
     secrets:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKER_TOKEN }}
