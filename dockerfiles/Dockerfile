@@ -4,14 +4,11 @@ LABEL maintainer="docker@mornedhels.de"
 # Install prerequisites
 RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
-        cabextract \
         curl \
-        winbind \
         supervisor \
         cron \
         rsyslog \
         jq \
-        lsof \
         zip \
         python3 \
         python3-pip \
