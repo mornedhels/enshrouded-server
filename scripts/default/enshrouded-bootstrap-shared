@@ -44,7 +44,6 @@ updateOrCreateEnshroudedServerConfig() {
     cat >${install_path}/enshrouded_server.json << EOF
 {
   "name": "Enshrouded Server",
-  "password": "",
   "saveDirectory": "./savegame",
   "logDirectory": "./logs",
   "ip": "0.0.0.0",
@@ -56,10 +55,6 @@ EOF
 
   if [[ -n "$SERVER_NAME" ]]; then
     echo "$(jq --arg name "$SERVER_NAME" '.name = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_PASSWORD" ]]; then
-    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_SAVE_DIR" ]]; then
@@ -96,6 +91,8 @@ updateUserGroupConfig() {
     debug "userGroups array does not exist, creating empty array"
     echo "$(jq '.userGroups = []' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
+
+  handleDeprecatedServerPassword
 
   # add missing groups
   for group_index in $(seq 0 $group_count); do
@@ -141,6 +138,28 @@ updateUserGroupConfig() {
         ;;
     esac
   done
+}
+
+handleDeprecatedServerPassword() {
+  if [[ -n "$SERVER_PASSWORD" ]]; then
+    warn "SERVER_PASSWORD is deprecated, pls consider using SERVER_ROLE_<index>_PASSWORD instead"
+    warn "falling back to \"Default\" server role password"
+
+    # check if group 0 exists if not create it
+    if ! jq -e '.userGroups[0]' ${install_path}/enshrouded_server.json >/dev/null; then
+      debug "default group (index: 0) does not exist, creating default group."
+      echo "$(jq --argjson group_index "$group_index" '.userGroups += [{"name": "Default", "password": "", "canKickBan": false, "canAccessInventories": false, "canEditBase": false, "canExtendBase": false, "reservedSlots": 0}]' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    fi
+
+    # check if group 0 name is "Default" if not return
+    if [[ "$(jq -r '.userGroups[0].name' ${install_path}/enshrouded_server.json)" != "Default" ]]; then
+      warn "default group (index: 0) has not the name \"Default\". Skipping password update!"
+      return
+    fi
+
+    debug "updating default group (index: 0) password to $SERVER_PASSWORD"
+    echo "$(jq --arg password "$SERVER_PASSWORD" '.userGroups[0].password = $password' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
 }
 
 updateGameSettingsConfig() {
