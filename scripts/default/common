@@ -5,6 +5,7 @@ steamcmd_path=/usr/bin/steamcmd
 steam_app_id=2278520
 enshrouded_binary_path=enshrouded_server.exe
 savefile_name=3ad85aea
+steamapp_manifests=steamapps/appmanifest_*.acf
 
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
