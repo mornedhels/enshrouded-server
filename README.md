@@ -199,3 +199,11 @@ again. If you want to keep the current savegame, make sure to make a backup befo
   ```
   This means there is probably something wrong with your file permissions, or you don't have enough disk space left.
   Make sure the UID and GID are correct and the files are owned by the correct user.
+* The (auto-)update fails with the following error:
+  ```
+  Error! App '2278520' state is 0x6 after update job.
+  ```
+  Officially this means the updater has no connection to the content servers.
+  <br/>But there could also be something wrong with the steam
+  appmanifest ([#119](https://github.com/mornedhels/enshrouded-server/issues/119)). To fix this, you can use the **force
+  update** command.

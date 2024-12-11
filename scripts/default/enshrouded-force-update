@@ -4,7 +4,12 @@
 
 main() {
   info "Force Enshrouded update"
-  rm $version_file_path
+  rm -f $version_file_path
+
+  # Remove steamapp manifests to solve steamcmd update issues #119
+  debug "Removing $install_path/$manifest"
+  rm -f $install_path/$manifest
+
   supervisorctl start enshrouded-updater
 }
 
