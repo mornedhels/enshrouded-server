@@ -49,9 +49,9 @@ updateOrCreateEnshroudedServerConfig() {
   "ip": "0.0.0.0",
   "queryPort": 15637,
   "slotCount": 16,
-	"voiceChatMode": "Proximity",
-	"enableVoiceChat": false,
-	"enableTextChat": false,
+  "voiceChatMode": "Proximity",
+  "enableVoiceChat": false,
+  "enableTextChat": false
 }
 EOF
   fi
