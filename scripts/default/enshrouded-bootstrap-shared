@@ -48,7 +48,10 @@ updateOrCreateEnshroudedServerConfig() {
   "logDirectory": "./logs",
   "ip": "0.0.0.0",
   "queryPort": 15637,
-  "slotCount": 16
+  "slotCount": 16,
+	"voiceChatMode": "Proximity",
+	"enableVoiceChat": false,
+	"enableTextChat": false,
 }
 EOF
   fi
@@ -75,6 +78,18 @@ EOF
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
     echo "$(jq --argjson slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_VOICE_CHAT_MODE" ]]; then
+    echo "$(jq --argjson voiceChatMode "$SERVER_VOICE_CHAT_MODE" '.voiceChatMode = $voiceChatMode' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_ENABLE_VOICE_CHAT" ]]; then
+    echo "$(jq --argjson enableVoiceChat "$SERVER_ENABLE_VOICE_CHAT" '.enableVoiceChat = $enableVoiceChat' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
+
+  if [[ -n "$SERVER_ENABLE_TEXT_CHAT" ]]; then
+    echo "$(jq --argjson enableTextChat "$SERVER_ENABLE_TEXT_CHAT" '.enableTextChat = $enableTextChat' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   updateUserGroupConfig
