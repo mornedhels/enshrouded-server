@@ -57,38 +57,47 @@ EOF
   fi
 
   if [[ -n "$SERVER_NAME" ]]; then
+    debug "updating name to $SERVER_NAME"
     echo "$(jq --arg name "$SERVER_NAME" '.name = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_SAVE_DIR" ]]; then
+    debug "updating saveDirectory to $SERVER_SAVE_DIR"
     echo "$(jq --arg saveDirectory "$SERVER_SAVE_DIR" '.saveDirectory = $saveDirectory' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_LOG_DIR" ]]; then
+    debug "updating logDirectory to $SERVER_LOG_DIR"
     echo "$(jq --arg logDirectory "$SERVER_LOG_DIR" '.logDirectory = $logDirectory' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_IP" ]]; then
+    debug "updating ip to $SERVER_IP"
     echo "$(jq --arg ip "$SERVER_IP" '.ip = $ip' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
+    debug "updating queryPort to $SERVER_QUERYPORT"
     echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+    debug "updating slotCount to $SERVER_SLOT_COUNT"
     echo "$(jq --argjson slotCount "$SERVER_SLOT_COUNT" '.slotCount = $slotCount' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_VOICE_CHAT_MODE" ]]; then
-    echo "$(jq --argjson voiceChatMode "$SERVER_VOICE_CHAT_MODE" '.voiceChatMode = $voiceChatMode' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+    debug "updating voiceChatMode to $SERVER_VOICE_CHAT_MODE"
+    echo "$(jq --arg voiceChatMode "$SERVER_VOICE_CHAT_MODE" '.voiceChatMode = $voiceChatMode' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_ENABLE_VOICE_CHAT" ]]; then
+    debug "updating enableVoiceChat to $SERVER_ENABLE_VOICE_CHAT"
     echo "$(jq --argjson enableVoiceChat "$SERVER_ENABLE_VOICE_CHAT" '.enableVoiceChat = $enableVoiceChat' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
   if [[ -n "$SERVER_ENABLE_TEXT_CHAT" ]]; then
+    debug "updating enableTextChat to $SERVER_ENABLE_TEXT_CHAT"
     echo "$(jq --argjson enableTextChat "$SERVER_ENABLE_TEXT_CHAT" '.enableTextChat = $enableTextChat' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
