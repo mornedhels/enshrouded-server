@@ -108,6 +108,7 @@ verifyVariables() {
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
+    warn "[DEPRECATED}: SERVER_PORT is deprecated, please use only SERVER_QUERYPORT."
     if [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
       error "SERVER_PORT must be between 1 and 65535 (actual: $SERVER_PORT)"
       exit 1

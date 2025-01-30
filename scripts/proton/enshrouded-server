@@ -27,7 +27,7 @@ waitForServerDownload() {
 
 runServer() {
   info "Running enshrouded-server"
-  debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-15636} - ServerQueryPort:${SERVER_QUERYPORT:-15637}"
+  debug "Server config ServerName:$SERVER_NAME - ServerQueryPort:${SERVER_QUERYPORT:-15637}"
 
   export WINEDEBUG=$WINEDEBUG
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/enshrouded/.steam/steam"
