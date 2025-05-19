@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:ubuntu-24@sha256:9d77693df2e2bc8aca238e5c626e411ed46bc825f448924eee17f08c00e51fe5 AS builder
+FROM steamcmd/steamcmd:ubuntu-24@sha256:c8ccf46aac356097aad1063ef28ed5169664c222aecf7939ab2c8b298f957ef5 AS builder
 
 ARG GE_PROTON_VERSION="9-25"
 
@@ -21,7 +21,7 @@ RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/dow
     && dbus-uuidgen --ensure=/etc/machine-id
 
 
-FROM steamcmd/steamcmd:ubuntu-24@sha256:9d77693df2e2bc8aca238e5c626e411ed46bc825f448924eee17f08c00e51fe5
+FROM steamcmd/steamcmd:ubuntu-24@sha256:c8ccf46aac356097aad1063ef28ed5169664c222aecf7939ab2c8b298f957ef5
 LABEL maintainer="docker@mornedhels.de"
 
 # Install dependencies
