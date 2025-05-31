@@ -6,16 +6,16 @@ You can also just edit the `enshrouded_server.json` file directly.
 
 ## Environment Variables
 
-| Variable                        | Default   | Contraints            | Description                                                                     | WIP | 
-|---------------------------------|-----------|-----------------------|---------------------------------------------------------------------------------|:---:|
-| **Server Roles** |           |                       | prefix with `SERVER_ROLE_<index>_` e.g. `SERVER_ROLE_0_NAME` (alias usergroups) |     |
-|   `NAME`                        | `Default` | string                | The name of the server role on index (starting with 0)                          |     |
-|   `PASSWORD`                    | `""`      | string                | The password for the server role                                                |     |
-|   `CAN_KICK_BAN`                | `false`   | boolean (true, false) | Permission to kick and ban players                                              |     |
-|   `CAN_ACCESS_INVENTORIES`      | `false`   | boolean (true, false) | Permission to access inventories                                                |     |
-|   `CAN_EDIT_BASE`               | `false`   | boolean (true, false) | Permission to edit the base                                                     |     |
-|   `CAN_EXTEND_BASE`             | `false`   | boolean (true, false) | Permission to extend the base                                                   |     |
-|   `RESERVED_SLOTS`              | `0`       | integer               | Number of reserved slots for the server role                                    |     |
+| Variable                   | Default   | Contraints            | Description                                                                     | WIP | 
+|----------------------------|-----------|-----------------------|---------------------------------------------------------------------------------|:---:|
+| **Server Roles**           |           |                       | prefix with `SERVER_ROLE_<index>_` e.g. `SERVER_ROLE_0_NAME` (alias usergroups) |     |
+|   `NAME`                   | `Default` | string                | The name of the server role on index (starting with 0)                          |     |
+|   `PASSWORD`               | `""`      | string                | The password for the server role                                                |     |
+|   `CAN_KICK_BAN`           | `false`   | boolean (true, false) | Permission to kick and ban players                                              |     |
+|   `CAN_ACCESS_INVENTORIES` | `false`   | boolean (true, false) | Permission to access inventories                                                |     |
+|   `CAN_EDIT_BASE`          | `false`   | boolean (true, false) | Permission to edit the base                                                     |     |
+|   `CAN_EXTEND_BASE`        | `false`   | boolean (true, false) | Permission to extend the base                                                   |     |
+|   `RESERVED_SLOTS`         | `0`       | integer               | Number of reserved slots for the server role                                    |     |
 
 ## Example Usage
 
