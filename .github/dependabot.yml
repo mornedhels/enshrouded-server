@@ -8,9 +8,11 @@ updates:
     directory: "/dockerfiles"
     schedule:
       interval: "weekly"
+      day: friday
 
     # Keep Github Actions up to date
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: friday
