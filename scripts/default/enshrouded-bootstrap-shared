@@ -361,4 +361,9 @@ updateGameSettingsConfig() {
     debug "updating gameSettingsTombstoneMode to $SERVER_GS_TOMBSTONE_MODE"
     echo "$(jq --arg name "$SERVER_GS_TOMBSTONE_MODE" '.gameSettings.tombstoneMode = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
+
+  if [[ -n "$SERVER_GS_CURSE_MODIFIER" ]]; then
+    debug "updating gameSettingsCurseModifier to $SERVER_GS_CURSE_MODIFIER"
+    echo "$(jq --argjson factor "$SERVER_GS_CURSE_MODIFIER" '.gameSettings.curseModifier = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+  fi
 }
