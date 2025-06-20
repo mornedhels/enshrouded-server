@@ -31,6 +31,8 @@ updates and cleanup.
 | `BACKUP_CRON`                                                                                                |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes |     |
 | `BACKUP_DIR`                                                                                                 |          | `./backup`          | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
 | `BACKUP_MAX_COUNT`                                                                                           |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
+| `RESTART_CRON`                                                                                               |          |                     | string (cron format)  | Restart game server cron (eg. `* 3 * * *` restart server daily at 3)                                               | ⚠️  |
+| `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Should the restart check if someone is connected                                                                   | ⚠️  |
 | `GAME_BRANCH`                                                                                                |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`                                                                                              |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 | `SERVER_PASSWORD` ⚠️DEPRECATED                                                                               |          |                     | string                | ⚠️ DEPRECATED: The password for the server (Enshrouded ignores this value - use Server Roles instead)              |     |
@@ -51,13 +53,15 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 
 ### Hooks
 
-| Variable           | Description                            | WIP |
-|--------------------|----------------------------------------|:---:|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |     |
-| `UPDATE_PRE_HOOK`  | Command to run before update           |     |
-| `UPDATE_POST_HOOK` | Command to run after update            |     |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |     |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |     |
+| Variable            | Description                            | WIP |
+|---------------------|----------------------------------------|:---:|
+| `BOOTSTRAP_HOOK`    | Command to run after general bootstrap |     |
+| `UPDATE_PRE_HOOK`   | Command to run before update           |     |
+| `UPDATE_POST_HOOK`  | Command to run after update            |     |
+| `BACKUP_PRE_HOOK`   | Command to run before backup & cleanup |     |
+| `BACKUP_POST_HOOK`  | Command to run after backup & cleanup  |     |
+| `RESTART_PRE_HOOK`  | Command to run before server restart   |     |
+| `RESTART_POST_HOOK` | Command to run after server restart    |     |
 
 The scripts will wait for the hook to resolve/return before continuing.
 
