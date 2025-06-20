@@ -1,6 +1,6 @@
 FROM steamcmd/steamcmd:ubuntu-24@sha256:ad823ea193393247cc939215cb6d4ab6d1d74c05e512012a6ebd9910f979b8ea AS builder
 
-ARG GE_PROTON_VERSION="10-3"
+ARG GE_PROTON_VERSION="10-4"
 
 # Install prerequisites
 RUN dpkg --add-architecture i386 \
@@ -47,7 +47,7 @@ RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetri
     && rm -rf /tmp/*
 
 # MISC
-RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam/sdk32 /home/enshrouded/.steam/sdk64 \
+RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam/sdk32 /home/enshrouded/.steam/sdk64 /home/enshrouded/.config/protonfixes /home/enshrouded/.cache/protonfixes \
     && groupadd -g "${PGID:-4711}" -o enshrouded \
     && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home enshrouded \
     && ln -f /root/.steam/sdk32/steamclient.so /home/enshrouded/.steam/sdk32/steamclient.so \
