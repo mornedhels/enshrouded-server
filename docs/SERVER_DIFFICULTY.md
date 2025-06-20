@@ -44,6 +44,11 @@
 
 ⚠️: Work in Progress
 
+> [!NOTE]
+> All environment variables prefixed with `SERVER_GS_` are now automatically mapped to the configuration file
+> `enshrouded_server.json`. So if there are any new variables added in the future, you can simply use the SNAKE_CASE
+> version.
+
 > [!TIP]  
 > The gameSettings config will be generated automatically with default values when you start the server without
 > specifying any environment variables.
