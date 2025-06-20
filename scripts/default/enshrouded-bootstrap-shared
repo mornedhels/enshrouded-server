@@ -19,6 +19,12 @@ initCrontab() {
     echo "$BACKUP_CRON supervisorctl start enshrouded-backup >/dev/null 2>&1" >>"$crontab"
   fi
 
+  if [ -n "$RESTART_CRON" ]; then
+    debug "creating cron for server restarts (schedule: $RESTART_CRON)"
+    echo "$RESTART_CRON supervisorctl start enshrouded-restart >/dev/null 2>&1" >>"$crontab"
+  fi
+
+
   crontab "$crontab"
   rm -f "$crontab"
 }

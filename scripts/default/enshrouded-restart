@@ -1,0 +1,66 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+main() {
+  info "Running enshrouded-restart"
+  restart
+  info "enshrouded-restart complete"
+}
+
+restart() {
+  restartPreHook
+
+  if ! checkServerEmpty; then
+    warn "Enshrouded server is not empty - restart will not be performed"
+    return
+  fi
+
+  info "Restarting Enshrouded server"
+  supervisorctl restart enshrouded-server >/dev/null 2>&1
+
+  restartPostHook
+}
+
+checkServerEmpty() {
+  local connected_players
+
+  if [ -n "$STEAM_API_PUBLIC_IP" ] && [ -n "$STEAM_API_KEY" ]; then
+    warn "STEAM_API_PUBLIC_IP and STEAM_API_KEY are deprecated and will be removed in a future release"
+  else
+    if [ "$RESTART_CHECK_PLAYERS" == "false" ]; then
+      return 0
+    fi
+  fi
+
+  connected_players=$(python3 -c "
+try:
+    import a2s
+    print(len(a2s.players(('127.0.0.1',${SERVER_QUERYPORT:-15637}))))
+except Exception as e:
+    print('null')
+")
+
+  debug "[checkServerEmpty] connected_players: $connected_players"
+  if [ -n "$connected_players" ] && [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+restartPreHook() {
+  if [ -n "$RESTART_PRE_HOOK" ]; then
+    info "Running restart pre hook: $RESTART_PRE_HOOK"
+    eval "$RESTART_PRE_HOOK"
+  fi
+}
+
+restartPostHook() {
+  if [ -n "$RESTART_POST_HOOK" ]; then
+    info "Running restart post hook: $RESTART_POST_HOOK"
+    eval "$RESTART_POST_HOOK"
+  fi
+}
+
+main
