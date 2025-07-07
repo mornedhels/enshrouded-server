@@ -193,178 +193,47 @@ handleDeprecatedServerPassword() {
 }
 
 updateGameSettingsConfig() {
-  if [[ -n "$SERVER_GS_PRESET" ]]; then
-    debug "updating gameSettingsPreset to $SERVER_GS_PRESET"
-    echo "$(jq --arg name "$SERVER_GS_PRESET" '.gameSettingsPreset = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+  # Iterate over environment variables starting with SERVER_GS_
+  for var_name in $(compgen -A variable | grep '^SERVER_GS_'); do
+    local var_value
+    var_value=$(eval echo "\$$var_name")
 
-  if [[ -n "$SERVER_GS_PLAYER_HEALTH_FACTOR" ]]; then
-    debug "updating gameSettingsPlayerHealthFactor to $SERVER_GS_PLAYER_HEALTH_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PLAYER_HEALTH_FACTOR" '.gameSettings.playerHealthFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    # Skip if the variable is not set or is empty
+    if [[ -z "$var_value" ]]; then
+      continue
+    fi
 
-  if [[ -n "$SERVER_GS_PLAYER_MANA_FACTOR" ]]; then
-    debug "updating gameSettingsPlayerManaFactor to $SERVER_GS_PLAYER_MANA_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PLAYER_MANA_FACTOR" '.gameSettings.playerManaFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    local suffix="${var_name#SERVER_GS_}"
+    local jq_key_name # camelCase version of suffix
+    local full_jq_path
+    local jq_arg_option
 
-  if [[ -n "$SERVER_GS_PLAYER_STAMINA_FACTOR" ]]; then
-    debug "updating gameSettingsPlayerStaminaFactor to $SERVER_GS_PLAYER_STAMINA_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PLAYER_STAMINA_FACTOR" '.gameSettings.playerStaminaFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    # Convert Suffix (e.g., PLAYER_HEALTH_FACTOR) to jq key name (e.g., playerHealthFactor)
+    jq_key_name=$(echo "$suffix" | tr '[:upper:]' '[:lower:]' | awk -F_ '{for(i=1;i<=NF;i++){if(i==1){out=$i}else{out=out toupper(substr($i,1,1)) substr($i,2)}}}END{print out}')
 
-  if [[ -n "$SERVER_GS_PLAYER_BODY_HEAT_FACTOR" ]]; then
-    debug "updating gameSettingsPlayerBodyHeatFactor to $SERVER_GS_PLAYER_BODY_HEAT_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PLAYER_BODY_HEAT_FACTOR" '.gameSettings.playerBodyHeatFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    if [[ "$suffix" == "PRESET" ]]; then
+      full_jq_path=".gameSettingsPreset"
+      jq_arg_option="--arg" # Preset value is always a string
+    else
+      full_jq_path=".gameSettings.$jq_key_name"
+      # Determine jq argument option based on the value
+      # Use --argjson for booleans (true/false) and numeric values
+      if [[ "$var_value" == "true" || "$var_value" == "false" || "$var_value" =~ ^[+-]?[0-9]+([.][0-9]+)?$ ]]; then
+        jq_arg_option="--argjson"
+      else
+        jq_arg_option="--arg" # Default to string
+      fi
+    fi
 
-  if [[ -n "$SERVER_GS_ENABLE_DURABILITY" ]]; then
-    debug "updating gameSettingsEnableDurability to $SERVER_GS_ENABLE_DURABILITY"
-    echo "$(jq --argjson bool "$SERVER_GS_ENABLE_DURABILITY" '.gameSettings.enableDurability = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    debug "Updating game setting: $var_name -> $full_jq_path = $var_value (using $jq_arg_option)"
 
-  if [[ -n "$SERVER_GS_ENABLE_STARVING_DEBUFF" ]]; then
-    debug "updating gameSettingsEnableStarvingDebuff to $SERVER_GS_ENABLE_STARVING_DEBUFF"
-    echo "$(jq --argjson bool "$SERVER_GS_ENABLE_STARVING_DEBUFF" '.gameSettings.enableStarvingDebuff = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_FOOD_BUFF_DURATION_FACTOR" ]]; then
-    debug "updating gameSettingsFoodBuffDurationFactor to $SERVER_GS_FOOD_BUFF_DURATION_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_FOOD_BUFF_DURATION_FACTOR" '.gameSettings.foodBuffDurationFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_FROM_HUNGER_TO_STARVING" ]]; then
-    debug "updating gameSettingsFromHungerToStarving to $SERVER_GS_FROM_HUNGER_TO_STARVING"
-    echo "$(jq --argjson factor "$SERVER_GS_FROM_HUNGER_TO_STARVING" '.gameSettings.fromHungerToStarving = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_SHROUD_TIME_FACTOR" ]]; then
-    debug "updating gameSettingsShroudTimeFactor to $SERVER_GS_SHROUD_TIME_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_SHROUD_TIME_FACTOR" '.gameSettings.shroudTimeFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_ENABLE_GLIDER_TURBULENCES" ]]; then
-    debug "updating gameSettingsEnableGliderTurbulences to $SERVER_GS_ENABLE_GLIDER_TURBULENCES"
-    echo "$(jq --argjson bool "$SERVER_GS_ENABLE_GLIDER_TURBULENCES" '.gameSettings.enableGliderTurbulences = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_WEATHER_FREQUENCY" ]]; then
-    debug "updating gameSettingsWeatherFrequency to $SERVER_GS_WEATHER_FREQUENCY"
-    echo "$(jq --arg name "$SERVER_GS_WEATHER_FREQUENCY" '.gameSettings.weatherFrequency = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_RANDOM_SPAWNER_AMOUNT" ]]; then
-    debug "updating gameSettingsRandomSpawnerAmount to $SERVER_GS_RANDOM_SPAWNER_AMOUNT"
-    echo "$(jq --arg name "$SERVER_GS_RANDOM_SPAWNER_AMOUNT" '.gameSettings.randomSpawnerAmount = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_MINING_DAMAGE_FACTOR" ]]; then
-    debug "updating gameSettingsMiningDamageFactor to $SERVER_GS_MINING_DAMAGE_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_MINING_DAMAGE_FACTOR" '.gameSettings.miningDamageFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_PLANT_GROWTH_SPEED_FACTOR" ]]; then
-    debug "updating gameSettingsPlantGrowthSpeedFactor to $SERVER_GS_PLANT_GROWTH_SPEED_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PLANT_GROWTH_SPEED_FACTOR" '.gameSettings.plantGrowthSpeedFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_RESOURCE_DROP_STACK_AMOUNT_FACTOR" ]]; then
-    debug "updating gameSettingsResourceDropStackAmountFactor to $SERVER_GS_RESOURCE_DROP_STACK_AMOUNT_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_RESOURCE_DROP_STACK_AMOUNT_FACTOR" '.gameSettings.resourceDropStackAmountFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_FACTORY_PRODUCTION_SPEED_FACTOR" ]]; then
-    debug "updating gameSettingsFactoryProductionSpeedFactor to $SERVER_GS_FACTORY_PRODUCTION_SPEED_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_FACTORY_PRODUCTION_SPEED_FACTOR" '.gameSettings.factoryProductionSpeedFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_PERK_UPGRADE_RECYCLING_FACTOR" ]]; then
-    debug "updating gameSettingsPerkUpgradeRecyclingFactor to $SERVER_GS_PERK_UPGRADE_RECYCLING_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PERK_UPGRADE_RECYCLING_FACTOR" '.gameSettings.perkUpgradeRecyclingFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_PERK_COST_FACTOR" ]]; then
-    debug "updating gameSettingsPerkCostFactor to $SERVER_GS_PERK_COST_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_PERK_COST_FACTOR" '.gameSettings.perkCostFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_EXPERIENCE_COMBAT_FACTOR" ]]; then
-    debug "updating gameSettingsExperienceCombatFactor to $SERVER_GS_EXPERIENCE_COMBAT_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_EXPERIENCE_COMBAT_FACTOR" '.gameSettings.experienceCombatFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_EXPERIENCE_MINING_FACTOR" ]]; then
-    debug "updating gameSettingsExperienceMiningFactor to $SERVER_GS_EXPERIENCE_MINING_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_EXPERIENCE_MINING_FACTOR" '.gameSettings.experienceMiningFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_EXPERIENCE_EXPLORATION_QUESTS_FACTOR" ]]; then
-    debug "updating gameSettingsExperienceExplorationQuestsFactor to $SERVER_GS_EXPERIENCE_EXPLORATION_QUESTS_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_EXPERIENCE_EXPLORATION_QUESTS_FACTOR" '.gameSettings.experienceExplorationQuestsFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_AGGRO_POOL_AMOUNT" ]]; then
-    debug "updating gameSettingsAggroPoolAmount to $SERVER_GS_AGGRO_POOL_AMOUNT"
-    echo "$(jq --arg name "$SERVER_GS_AGGRO_POOL_AMOUNT" '.gameSettings.aggroPoolAmount = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_ENEMY_DAMAGE_FACTOR" ]]; then
-    debug "updating gameSettingsEnemyDamageFactor to $SERVER_GS_ENEMY_DAMAGE_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_ENEMY_DAMAGE_FACTOR" '.gameSettings.enemyDamageFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_ENEMY_HEALTH_FACTOR" ]]; then
-    debug "updating gameSettingsEnemyHealthFactor to $SERVER_GS_ENEMY_HEALTH_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_ENEMY_HEALTH_FACTOR" '.gameSettings.enemyHealthFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_ENEMY_STAMINA_FACTOR" ]]; then
-    debug "updating gameSettingsEnemyStaminaFactor to $SERVER_GS_ENEMY_STAMINA_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_ENEMY_STAMINA_FACTOR" '.gameSettings.enemyStaminaFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_ENEMY_PERCEPTION_RANGE_FACTOR" ]]; then
-    debug "updating gameSettingsEnemyPerceptionRangeFactor to $SERVER_GS_ENEMY_PERCEPTION_RANGE_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_ENEMY_PERCEPTION_RANGE_FACTOR" '.gameSettings.enemyPerceptionRangeFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_BOSS_DAMAGE_FACTOR" ]]; then
-    debug "updating gameSettingsBossDamageFactor to $SERVER_GS_BOSS_DAMAGE_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_BOSS_DAMAGE_FACTOR" '.gameSettings.bossDamageFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_BOSS_HEALTH_FACTOR" ]]; then
-    debug "updating gameSettingsBossHealthFactor to $SERVER_GS_BOSS_HEALTH_FACTOR"
-    echo "$(jq --argjson factor "$SERVER_GS_BOSS_HEALTH_FACTOR" '.gameSettings.bossHealthFactor = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_THREAT_BONUS" ]]; then
-    debug "updating gameSettingsThreatBonus to $SERVER_GS_THREAT_BONUS"
-    echo "$(jq --argjson factor "$SERVER_GS_THREAT_BONUS" '.gameSettings.threatBonus = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_PACIFY_ALL_ENEMIES" ]]; then
-    debug "updating gameSettingsPacifyAllEnemies to $SERVER_GS_PACIFY_ALL_ENEMIES"
-    echo "$(jq --argjson bool "$SERVER_GS_PACIFY_ALL_ENEMIES" '.gameSettings.pacifyAllEnemies = $bool' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_TAMING_STARTLE_REPERCUSSION" ]]; then
-    debug "updating gameSettingsTamingStartleRepercussion to $SERVER_GS_TAMING_STARTLE_REPERCUSSION"
-    echo "$(jq --arg name "$SERVER_GS_TAMING_STARTLE_REPERCUSSION" '.gameSettings.tamingStartleRepercussion = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_DAY_TIME_DURATION" ]]; then
-    debug "updating gameSettingsDayTimeDuration to $SERVER_GS_DAY_TIME_DURATION"
-    echo "$(jq --argjson factor "$SERVER_GS_DAY_TIME_DURATION" '.gameSettings.dayTimeDuration = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_NIGHT_TIME_DURATION" ]]; then
-    debug "updating gameSettingsNightTimeDuration to $SERVER_GS_NIGHT_TIME_DURATION"
-    echo "$(jq --argjson factor "$SERVER_GS_NIGHT_TIME_DURATION" '.gameSettings.nightTimeDuration = $factor' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
-
-  if [[ -n "$SERVER_GS_TOMBSTONE_MODE" ]]; then
-    debug "updating gameSettingsTombstoneMode to $SERVER_GS_TOMBSTONE_MODE"
-    echo "$(jq --arg name "$SERVER_GS_TOMBSTONE_MODE" '.gameSettings.tombstoneMode = $name' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
-  fi
+    local temp_json_file
+    temp_json_file=$(mktemp)
+    if jq "$jq_arg_option" val "$var_value" "$full_jq_path = \$val" "${install_path}/enshrouded_server.json" > "$temp_json_file"; then
+      mv "$temp_json_file" "${install_path}/enshrouded_server.json"
+    else
+      warn "Failed to update $var_name in enshrouded_server.json. JQ command failed."
+      rm -f "$temp_json_file" # Clean up temp file on failure
+    fi
+  done
 }
