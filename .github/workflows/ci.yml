@@ -56,7 +56,7 @@ jobs:
       - build-wine-stable
       - build-wine-staging
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
