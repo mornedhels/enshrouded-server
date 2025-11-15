@@ -13,6 +13,7 @@ You can also just edit the `enshrouded_server.json` file directly.
 |   `PASSWORD`               | `""`      | string                | The password for the server role                                                |     |
 |   `CAN_KICK_BAN`           | `false`   | boolean (true, false) | Permission to kick and ban players                                              |     |
 |   `CAN_ACCESS_INVENTORIES` | `false`   | boolean (true, false) | Permission to access inventories                                                |     |
+|   `CAN_EDIT_WORLD`         | `false`   | boolean (true, false) | Permission to edit world structures                                             | ⚠️  |
 |   `CAN_EDIT_BASE`          | `false`   | boolean (true, false) | Permission to edit the base                                                     |     |
 |   `CAN_EXTEND_BASE`        | `false`   | boolean (true, false) | Permission to extend the base                                                   |     |
 |   `RESERVED_SLOTS`         | `0`       | integer               | Number of reserved slots for the server role                                    |     |
@@ -41,12 +42,14 @@ services:
       - SERVER_ROLE_0_PASSWORD=secret1
       - SERVER_ROLE_0_CAN_KICK_BAN=true
       - SERVER_ROLE_0_CAN_ACCESS_INVENTORIES=true
+      - SERVER_ROLE_0_CAN_EDIT_WORLD=true
       - SERVER_ROLE_0_CAN_EDIT_BASE=true
       - SERVER_ROLE_0_CAN_EXTEND_BASE=true
       - SERVER_ROLE_0_RESERVED_SLOTS=1
       - SERVER_ROLE_1_NAME=Friends
       - SERVER_ROLE_1_PASSWORD=secret2
       - SERVER_ROLE_1_CAN_ACCESS_INVENTORIES=true
+      - SERVER_ROLE_1_CAN_EDIT_WORLD=true
       - SERVER_ROLE_1_CAN_EDIT_BASE=true
       - SERVER_ROLE_1_CAN_EXTEND_BASE=true
       - SERVER_ROLE_1_RESERVED_SLOTS=3
@@ -71,6 +74,7 @@ Creates the following `enshrouded_server.json` file:
       "password": "secret1",
       "canKickBan": true,
       "canAccessInventories": true,
+      "canEditWorld": true,
       "canEditBase": true,
       "canExtendBase": true,
       "reservedSlots": 1
@@ -80,6 +84,7 @@ Creates the following `enshrouded_server.json` file:
       "password": "secret2",
       "canKickBan": false,
       "canAccessInventories": true,
+      "canEditWorld": true,
       "canEditBase": true,
       "canExtendBase": true,
       "reservedSlots": 3
@@ -89,6 +94,7 @@ Creates the following `enshrouded_server.json` file:
       "password": "secret3",
       "canKickBan": false,
       "canAccessInventories": false,
+      "canEditWorld": false,
       "canEditBase": false,
       "canExtendBase": false,
       "reservedSlots": 0

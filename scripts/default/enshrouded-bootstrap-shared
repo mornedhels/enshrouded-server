@@ -154,6 +154,10 @@ updateUserGroupConfig() {
         debug "updating group $group_index canAccessInventories to $group_value"
         echo "$(jq --argjson group_index "$group_index" --argjson canAccessInventories "$group_value" '.userGroups[$group_index].canAccessInventories = $canAccessInventories' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
         ;;
+      CAN_EDIT_WORLD)
+        debug "updating group $group_index canEditWorld to $group_value"
+        echo "$(jq --argjson group_index "$group_index" --argjson canEditBase "$group_value" '.userGroups[$group_index].canEditWorld = $canEditWorld' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
+        ;;
       CAN_EDIT_BASE)
         debug "updating group $group_index canEditBase to $group_value"
         echo "$(jq --argjson group_index "$group_index" --argjson canEditBase "$group_value" '.userGroups[$group_index].canEditBase = $canEditBase' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
