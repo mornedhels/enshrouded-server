@@ -18,7 +18,7 @@
 |   `SHROUD_TIME_FACTOR`                   | `1`                    | 0.5 - 2                                             | Scales how long player characters can remain within the Shroud. Ingame, the factor is represented by a percentage                                                                               |     |
 |   `ENABLE_GLIDER_TURBULENCES`            | `true`                 | boolean (true, false)                               | If turned off, the glider will not be affected by air turbulences, just as in previous versions of the game.                                                                                    |     |
 |   `WEATHER_FREQUENCY`                    | `Normal`               | Disabled \| Rare \| Normal \| Often                 | This setting allows defining how often new weather phenomena appear in the game world.                                                                                                          |     |
-|   `FISCHING_DIFFICULTY`                  | `Normal`               | VeryEasy \| Easy \| Normal \| Hard \| VeryHard      | This setting defines the strength of the fish during the fishing minigame. The stronger a fish is, the longer the minigame will proceed.                                                        |     |
+|   `FISHING_DIFFICULTY`                   | `Normal`               | VeryEasy \| Easy \| Normal \| Hard \| VeryHard      | This setting defines the strength of the fish during the fishing minigame. The stronger a fish is, the longer the minigame will proceed.                                                        |     |
 |   `RANDOM_SPAWNER_AMOUNT`                | `Normal`               | Few \| Normal \| Many \| Extreme                    | This setting controls the amount of enemies in the world                                                                                                                                        |     |
 |   `MINING_DAMAGE_FACTOR`                 | `1`                    | 0.5 - 2                                             | This scales the mining damage. A higher mining damage leads to increased terraforming and more yield of resources per hit. Ingame, the factor is represented by a percentage                    |     |
 |   `PLANT_GROWTH_SPEED_FACTOR`            | `1`                    | 0.25 - 2                                            | Scales the value of the plant growth speed. Ingame, the factor is represented by a percentage                                                                                                   |     |
@@ -92,7 +92,7 @@ services:
       - SERVER_GS_SHROUD_TIME_FACTOR=1
       - SERVER_GS_ENABLE_GLIDER_TURBULENCES=false
       - SERVER_GS_WEATHER_FREQUENCY=Often
-      - SERVER_GS_FISCHING_DIFFICULTY=Hard
+      - SERVER_GS_FISHING_DIFFICULTY=Hard
       - SERVER_GS_RANDOM_SPAWNER_AMOUNT=Normal
       - SERVER_GS_MINING_DAMAGE_FACTOR=1
       - SERVER_GS_PLANT_GROWTH_SPEED_FACTOR=1
