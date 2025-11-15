@@ -10,6 +10,7 @@
 |   `PLAYER_MANA_FACTOR`                   | `1`                    | 0.25 - 4                                            | Scales the max mana for players by a factor. Ingame, the factor is represented by a percentage                                                                                                  |     |
 |   `PLAYER_STAMINA_FACTOR`                | `1`                    | 0.25 - 4                                            | Scales the max stamina for players by a factor. Ingame, the factor is represented by a percentage                                                                                               |     |
 |   `PLAYER_BODY_HEAT_FACTOR`              | `1`                    | low: 0.5 \| default: 1 \| high: 1.5 \| max: 2       | Scales the max amount of available body heat in the player. The higher the factor the longer the player can stay in very cold areas before hypothermia sets in.                                 |     |
+|   `PLAYER_DIVING_TIME_FACTOR`            | `1`                    | 0.5 - 2                                             | Modifies the initial amount of oxygen for players and therefore the time available underwater.                                                                                                  |     |
 |   `ENABLE_DURABILITY`                    | `true`                 | boolean (true, false)                               | Whether weapon durability is enabled                                                                                                                                                            |     |
 |   `ENABLE_STARVING_DEBUFF`               | `false`                | boolean (true, false)                               | Enables hunger and starvation. During starvation, the player loses health periodically until death if no food or drink is consumed                                                              |     |
 |   `FOOD_BUFF_DURATION_FACTOR`            | `1`                    | 0.5 - 2                                             | Scales food buff durations. Ingame, the factor is represented by a percentage                                                                                                                   |     |
@@ -17,6 +18,7 @@
 |   `SHROUD_TIME_FACTOR`                   | `1`                    | 0.5 - 2                                             | Scales how long player characters can remain within the Shroud. Ingame, the factor is represented by a percentage                                                                               |     |
 |   `ENABLE_GLIDER_TURBULENCES`            | `true`                 | boolean (true, false)                               | If turned off, the glider will not be affected by air turbulences, just as in previous versions of the game.                                                                                    |     |
 |   `WEATHER_FREQUENCY`                    | `Normal`               | Disabled \| Rare \| Normal \| Often                 | This setting allows defining how often new weather phenomena appear in the game world.                                                                                                          |     |
+|   `FISHING_DIFFICULTY`                   | `Normal`               | VeryEasy \| Easy \| Normal \| Hard \| VeryHard      | This setting defines the strength of the fish during the fishing minigame. The stronger a fish is, the longer the minigame will proceed.                                                        |     |
 |   `RANDOM_SPAWNER_AMOUNT`                | `Normal`               | Few \| Normal \| Many \| Extreme                    | This setting controls the amount of enemies in the world                                                                                                                                        |     |
 |   `MINING_DAMAGE_FACTOR`                 | `1`                    | 0.5 - 2                                             | This scales the mining damage. A higher mining damage leads to increased terraforming and more yield of resources per hit. Ingame, the factor is represented by a percentage                    |     |
 |   `PLANT_GROWTH_SPEED_FACTOR`            | `1`                    | 0.25 - 2                                            | Scales the value of the plant growth speed. Ingame, the factor is represented by a percentage                                                                                                   |     |
@@ -40,7 +42,7 @@
 |   `DAY_TIME_DURATION`                    | `1800000000000`        | 120000000000 - 3600000000000                        | Scales the length of daytime. A smaller value equals shorter daytime. The unit is nanoseconds. Ingame, the time is displayed in minutes                                                         |     |
 |   `NIGHT_TIME_DURATION`                  | `720000000000`         | 120000000000 - 1800000000000                        | Scales the length of nighttime. A smaller value equals shorter nighttime. The unit is nanoseconds. Ingame, the time is displayed in minutes                                                     |     |
 |   `TOMBSTONE_MODE`                       | `AddBackpackMaterials` | AddBackpackMaterials \| Everything \| NoTombstone   | The players can either keep or lose all items from their backpack when dying. In the default setting, they only lose materials. Lost items are stored in a tombstone and can be recovered there |     |
-|   `CURSE_MODIFIER`                       | `Normal`               | Off \| Normal \| Hard                               | The chances of getting cursed by enemies. With hard, the chance is doubled. With off, the curse mechanic is disabled.                                                                           | ⚠️  |
+|   `CURSE_MODIFIER`                       | `Normal`               | Off \| Normal \| Hard                               | The chances of getting cursed by enemies. With hard, the chance is doubled. With off, the curse mechanic is disabled.                                                                           |     |
 
 ⚠️: Work in Progress
 
@@ -82,6 +84,7 @@ services:
       - SERVER_GS_PLAYER_MANA_FACTOR=2
       - SERVER_GS_PLAYER_STAMINA_FACTOR=2
       - SERVER_GS_PLAYER_BODY_HEAT_FACTOR=2
+      - SERVER_GS_PLAYER_DIVING_TIME_FACTOR=2
       - SERVER_GS_ENABLE_DURABILITY=true
       - SERVER_GS_ENABLE_STARVING_DEBUFF=false
       - SERVER_GS_FOOD_BUFF_DURATION_FACTOR=1
@@ -89,6 +92,7 @@ services:
       - SERVER_GS_SHROUD_TIME_FACTOR=1
       - SERVER_GS_ENABLE_GLIDER_TURBULENCES=false
       - SERVER_GS_WEATHER_FREQUENCY=Often
+      - SERVER_GS_FISHING_DIFFICULTY=Hard
       - SERVER_GS_RANDOM_SPAWNER_AMOUNT=Normal
       - SERVER_GS_MINING_DAMAGE_FACTOR=1
       - SERVER_GS_PLANT_GROWTH_SPEED_FACTOR=1
@@ -143,6 +147,7 @@ Creates the following `enshrouded_server.json` file:
     "playerManaFactor": 2,
     "playerStaminaFactor": 2,
     "playerBodyHeatFactor": 2,
+    "playerDivingTimeFactor": 2,
     "enableDurability": true,
     "enableStarvingDebuff": false,
     "foodBuffDurationFactor": 1,
@@ -150,6 +155,7 @@ Creates the following `enshrouded_server.json` file:
     "shroudTimeFactor": 1,
     "enableGliderTurbulences": false,
     "weatherFrequency": "Often",
+    "fishingDifficulty": "Hard",
     "randomSpawnerAmount": "Normal",
     "miningDamageFactor": 1,
     "plantGrowthSpeedFactor": 1,
