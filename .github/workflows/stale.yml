@@ -1,0 +1,13 @@
+name: Close stale issues
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  stale:
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: mornedhels/workflow-center-public/.github/workflows/stale.yml@main
