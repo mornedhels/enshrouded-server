@@ -36,10 +36,16 @@ doUpdate() {
   fi
   verifyCpuMhz
   if ! downloadEnshrouded; then
-    warn "Download of Enshrouded server failed - aborting update"
-    supervisorctl start enshrouded-server
-    clearLock "$pidfile"
-    return
+    warn "Download of Enshrouded server failed - retry"
+    debug "Removing $install_path/$steamapp_path"
+    rm -rf $install_path/$steamapp_path
+
+    if ! downloadEnshrouded; then
+      warn "Download of Enshrouded server failed - aborting update"
+      supervisorctl start enshrouded-server
+      clearLock "$pidfile"
+      return
+    fi
   fi
   setCurrentVersion
   supervisorctl start enshrouded-server
