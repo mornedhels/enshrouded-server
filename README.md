@@ -136,6 +136,9 @@ services:
       - "15637:15637/udp"
     volumes:
       - ./game:/opt/enshrouded
+    # only add ntsync device if your kernel supports it (6.14 or newer)
+    devices:
+      - /dev/ntsync:/dev/ntsync
     environment:
       - SERVER_NAME=Enshrouded Server
       - SERVER_PASSWORD=secret
@@ -159,6 +162,9 @@ services:
       - "15637:15637/udp"
     volumes:
       - game:/opt/enshrouded
+    # only add ntsync device if your kernel supports it (6.14 or newer)
+    devices:
+      - /dev/ntsync:/dev/ntsync
     environment:
       - SERVER_NAME=Enshrouded Server
       - SERVER_PASSWORD=secret
