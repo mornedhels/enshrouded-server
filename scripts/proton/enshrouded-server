@@ -4,7 +4,7 @@
 
 enshrouded_server_pid=-1
 timeout=60
-kill_signal=TERM
+kill_signal=INT
 
 cd "$install_path" || fatal "Could not cd $install_path"
 enshrouded_server="$install_path/$enshrouded_binary_path"
@@ -32,6 +32,7 @@ runServer() {
   export WINEDEBUG=$WINEDEBUG
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/enshrouded/.steam/steam"
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
+  export WINEPREFIX="${STEAM_COMPAT_DATA_PATH}/pfx"
   export WINETRICKS="/usr/local/bin/winetricks"
 
   chmod +x "$enshrouded_server"
@@ -60,7 +61,7 @@ shutdown() {
     exit
   fi
   info "Shutting down enshrouded server with PID $enshrouded_server_pid"
-  kill -TERM $enshrouded_server_pid
+  kill -$kill_signal $(ps axww | grep '\\[e]nshrouded_server' | awk '{print $1}')
   shutdown_timeout=$(($(date +%s) + timeout))
   while [ -d "/proc/$enshrouded_server_pid" ]; do
     if [ "$(date +%s)" -gt $shutdown_timeout ]; then

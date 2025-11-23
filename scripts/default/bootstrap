@@ -80,7 +80,7 @@ setupSyslog() {
 \$template custom,"%timegenerated:1:10:date-rfc3339% %timegenerated:12:23:date-rfc3339% %syslogtag%%msg:::sp-if-no-1st-sp%%msg:::drop-last-lf%\n"
 \$ActionFileDefaultTemplate custom
 
-:msg, contains, "[session] Pending packets list is full" ~
+:msg, contains, "[session] Pending packets list is full" stop
 *.*;cron,auth,authpriv.none /proc/self/fd/1          # send everything to stdout
 EOF
 
