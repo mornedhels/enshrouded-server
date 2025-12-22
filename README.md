@@ -130,6 +130,16 @@ services:
     image: mornedhels/enshrouded-server:latest
     container_name: enshrouded
     hostname: enshrouded
+    security_opt:
+      - no-new-privileges=true
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+      - CHOWN
+      - SETUID
+      - SETGID
+      - KILL
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
@@ -139,6 +149,9 @@ services:
     # only add ntsync device if your kernel supports it (6.14 or newer)
     devices:
       - /dev/ntsync:/dev/ntsync
+    command: >
+      sh -c "chown -R $\PUID:$\PGID /var/spool/cron &&
+             exec /usr/local/etc/enshrouded/bootstrap"
     environment:
       - SERVER_NAME=Enshrouded Server
       - SERVER_PASSWORD=secret
