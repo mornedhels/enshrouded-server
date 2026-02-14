@@ -115,7 +115,6 @@ docker run -d --name enshrouded \
   -p 15637:15637/udp \
   -v ./game:/opt/enshrouded \
   -e SERVER_NAME="Enshrouded Server" \
-  -e SERVER_PASSWORD="secret" \
   -e UPDATE_CRON="*/30 * * * *" \
   -e PUID=4711 \
   -e PGID=4711 \
@@ -141,7 +140,6 @@ services:
       - /dev/ntsync:/dev/ntsync
     environment:
       - SERVER_NAME=Enshrouded Server
-      - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
       - PGID=4711
@@ -167,7 +165,6 @@ services:
       - /dev/ntsync:/dev/ntsync
     environment:
       - SERVER_NAME=Enshrouded Server
-      - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
       - PGID=4711
@@ -175,6 +172,10 @@ services:
 volumes:
   game:
 ```
+
+## Security Hardening
+
+For information on how to run the Enshrouded server more securely, please refer to the [Security Hardening](docs/SECURITY_HARDENING.md) guide.
 
 ## Backup
 
