@@ -47,7 +47,8 @@ applyPermissions() {
   chown -R enshrouded:enshrouded \
     /opt/enshrouded \
     /home/enshrouded \
-    /var/run/enshrouded
+    /var/run/enshrouded \
+    /var/spool/cron # needed for security hardening
 
   if [[ "$SERVER_SAVE_DIR" == /* ]]; then
     debug "Setting permissions for $SERVER_SAVE_DIR"
