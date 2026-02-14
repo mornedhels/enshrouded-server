@@ -7,6 +7,7 @@ main() {
   createFolders
   applyPermissions
   setupSyslog
+  setupSupervisorHttpServer
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
@@ -98,6 +99,24 @@ autostart=true
 autorestart=true
 priority=10
 EOF
+}
+
+setupSupervisorHttpServer() {
+  rm -f "$supervisor_http_conf"
+  if [ "$SUPERVISOR_HTTP" = true ]; then
+    info "Supervisor http server activated"
+    cat > "$supervisor_http_conf" <<EOF
+[inet_http_server]
+port = :$SUPERVISOR_HTTP_PORT
+EOF
+    chmod 600 "$supervisor_http_conf"
+    if [ -n "$SUPERVISOR_HTTP_USER" ] && [ -n "$SUPERVISOR_HTTP_PASS" ]; then
+      cat >> "$supervisor_http_conf" <<EOF
+username = $SUPERVISOR_HTTP_USER
+password = $SUPERVISOR_HTTP_PASS
+EOF
+    fi
+  fi
 }
 
 verifyVariables() {
