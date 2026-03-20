@@ -35,6 +35,7 @@ updates and cleanup.
 | `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Should the restart check if someone is connected                                                                   | ⚠️  |
 | `GAME_BRANCH`                                                                                                |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`                                                                                              |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
+| `SUPERVISOR_ADDON`                                                                                           |          | `false`             | boolean (true, false) | Enable bootstrap installation and startup of the Supervisor Addon                                                  |     |
 | `SERVER_PASSWORD` ⚠️DEPRECATED                                                                               |          |                     | string                | ⚠️ DEPRECATED: The password for the server (Enshrouded ignores this value - use Server Roles instead)              |     |
 | **[Server Roles](https://github.com/mornedhels/enshrouded-server/blob/main/docs/SERVER_ROLES.md)**           |          |                     |                       | further informations can be found following the link                                                               |     |
 | **[Server Difficulty](https://github.com/mornedhels/enshrouded-server/blob/main/docs/SERVER_DIFFICULTY.md)** |          |                     |                       | further informations can be found following the link                                                               | ⚠️  |
@@ -45,6 +46,8 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 ⚠️: Work in Progress
 
 ### Additional Information
+
+The Supervisor Addon is an optional game panel for Enshrouded. It gives you a clean web UI to start, stop, and restart the server, manage backups and updates, and edit key server settings without manual file edits.
 
 * During the update process, the container temporarily requires more disk space (up to 2x the game size).
 * Server role configuration can be done via the `enshrouded_server.json` file directly or the `SERVER_ROLE_<index>_XYZ`
@@ -83,9 +86,11 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 ## Ports (default)
 
-| Port      | Description      |
-|-----------|------------------|
-| 15637/udp | Steam query port |
+| Port      | Description                                             |
+|-----------|---------------------------------------------------------|
+| 15637/udp | Steam query port                                        |
+
+`8080/tcp` is only needed if you enable the Supervisor Addon.
 
 ## Volumes
 
@@ -113,11 +118,13 @@ docker run -d --name enshrouded \
   --hostname enshrouded \
   --restart=unless-stopped \
   -p 15637:15637/udp \
+  # -p 8080:8080 \
   -v ./game:/opt/enshrouded \
   -e SERVER_NAME="Enshrouded Server" \
   -e UPDATE_CRON="*/30 * * * *" \
   -e PUID=4711 \
   -e PGID=4711 \
+  # -e SUPERVISOR_ADDON=true \
   mornedhels/enshrouded-server:latest
 ```
 
@@ -133,6 +140,8 @@ services:
     stop_grace_period: 90s
     ports:
       - "15637:15637/udp"
+      # Optional: enable Supervisor Addon
+      # - "8080:8080"
     volumes:
       - ./game:/opt/enshrouded
     # only add ntsync device if your kernel supports it (6.14 or newer)
@@ -143,6 +152,7 @@ services:
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
       - PGID=4711
+      # - SUPERVISOR_ADDON=true
 ```
 
 **Note:** The volumes are created next to the docker-compose.yml file. If you want to create the volumes, in the default
@@ -158,6 +168,8 @@ services:
     stop_grace_period: 90s
     ports:
       - "15637:15637/udp"
+      # Optional: enable Supervisor Addon
+      # - "8080:8080"
     volumes:
       - game:/opt/enshrouded
     # only add ntsync device if your kernel supports it (6.14 or newer)
@@ -168,6 +180,7 @@ services:
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
       - PGID=4711
+      # - SUPERVISOR_ADDON=true
 
 volumes:
   game:
