@@ -7,6 +7,7 @@ main() {
   createFolders
   applyPermissions
   setupSyslog
+  configureSupervisorAddon
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
@@ -100,6 +101,49 @@ priority=10
 EOF
 }
 
+configureSupervisorAddon() {
+  if [[ "${SUPERVISOR_ADDON:-false}" != "true" ]]; then
+    info "Supervisor addon is disabled"
+    rm -f /usr/local/etc/supervisor/conf.d/supervisord.addon.conf
+    return
+  fi
+
+  info "Supervisor addon is enabled - downloading and installing latest release"
+  mkdir -p /opt/supervisor-addon /opt/supervisor-addon-backups /tmp/supervisor-addon-updater /var/log/supervisor
+  find /opt/supervisor-addon -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+  touch /var/log/supervisor/container-stream.log
+  chmod 0644 /var/log/supervisor/container-stream.log
+
+  if ! curl -fL "https://github.com/bonsaibauer/supervisor-addon/releases/latest/download/enshrouded-release.tar.gz" -o /tmp/enshrouded-release.tar.gz; then
+    error "Unable to download supervisor addon from https://github.com/bonsaibauer/supervisor-addon/releases/latest/download/enshrouded-release.tar.gz"
+    exit 1
+  fi
+  if ! tar -xzf /tmp/enshrouded-release.tar.gz -C /opt/supervisor-addon; then
+    error "Unable to extract supervisor addon release asset"
+    exit 1
+  fi
+  rm -f /tmp/enshrouded-release.tar.gz
+
+  if ! python3 -m pip install --break-system-packages --no-cache-dir --upgrade /opt/supervisor-addon/python/supervisor_stack-*.whl; then
+    error "Unable to install supervisor addon python package"
+    exit 1
+  fi
+
+  if [[ ! -f /opt/supervisor-addon/config/supervisord.addon.conf ]]; then
+    error "Supervisor addon config is missing at /opt/supervisor-addon/config/supervisord.addon.conf"
+    exit 1
+  fi
+
+  sed -i 's/^user=enshrouded$/user=root/' /opt/supervisor-addon/config/supervisord.addon.conf
+  export SUPERVISOR_GATEWAY_RPC_URL=${SUPERVISOR_GATEWAY_RPC_URL:-unix:///dev/shm/supervisor.sock}
+  cp /opt/supervisor-addon/config/supervisord.addon.conf /usr/local/etc/supervisor/conf.d/supervisord.addon.conf
+  chown -R enshrouded:enshrouded /opt/supervisor-addon /opt/supervisor-addon-backups /tmp/supervisor-addon-updater
+
+  if ! grep -Fq "/var/log/supervisor/container-stream.log" "$rsyslog_conf"; then
+    printf '%s\n' "*.*;cron,auth,authpriv.none /var/log/supervisor/container-stream.log" >> "$rsyslog_conf"
+  fi
+}
+
 verifyVariables() {
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
     if [[ "$SERVER_SLOT_COUNT" -lt 1 ]] || [[ "$SERVER_SLOT_COUNT" -gt 16 ]]; then
@@ -157,6 +201,14 @@ verifyVariables() {
       exit 1
     fi
   fi
+
+  if [[ -n "$SUPERVISOR_ADDON" ]]; then
+    if [[ "$SUPERVISOR_ADDON" != "true" ]] && [[ "$SUPERVISOR_ADDON" != "false" ]]; then
+      error "SUPERVISOR_ADDON must be true or false (actual: $SUPERVISOR_ADDON)"
+      exit 1
+    fi
+  fi
+
 }
 
 main
