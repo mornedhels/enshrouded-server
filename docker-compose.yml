@@ -12,6 +12,8 @@ services:
     stop_grace_period: 90s
     ports:
       - "15637:15637/udp"
+      # Supervisor Addon (optional): also set SUPERVISOR_ADDON=true in environment below.
+      # - "8080:8080"
     volumes:
       - ./game:/opt/enshrouded
     devices:
@@ -22,3 +24,4 @@ services:
       - PGID=4711
       - UPDATE_CRON=*/30 * * * *
       - log_level=50
+      # - SUPERVISOR_ADDON=true
