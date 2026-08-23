@@ -1,6 +1,6 @@
 FROM steamcmd/steamcmd:ubuntu-26@sha256:076bc1bae5c7da8e96ac19ec93beafabdc7f1c379287d97f3e529f9a236074c6 AS builder
 
-ARG GE_PROTON_VERSION="10-30"
+ARG GE_PROTON_VERSION="11-5"
 
 # Install prerequisites
 RUN dpkg --add-architecture i386 \
@@ -13,7 +13,7 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # install proton
-RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}.tar.gz" \
+RUN curl -sLOJ "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton${GE_PROTON_VERSION}/GE-Proton${GE_PROTON_VERSION}-x86_64.tar.gz" \
     && mkdir -p /tmp/proton \
     && tar -xzf GE-Proton*.tar.gz -C /tmp/proton --strip-components=1 \
     && rm GE-Proton*.* \
@@ -38,6 +38,7 @@ RUN dpkg --add-architecture i386 \
         python3-pip \
         libfreetype6 \
         libfreetype6:i386 \
+        libvulkan1 \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
