@@ -8,7 +8,7 @@ backup_dir=""
 
 main() {
   info "Running enshrouded-backup"
-  prepareBackup
+  prepareBackup || return $?
   info "enshrouded-backup complete"
 }
 
@@ -21,9 +21,9 @@ prepareBackup() {
   getSaveDir
   getBackupDir
 
-  if [ ! -f "$save_dir/$savefile_name-index" ]; then
+  if [ ! -f "$save_dir/world0.ksd" ] && [ ! -f "$save_dir/$savefile_name-index" ]; then
     warn "Save file not found - aborting backup"
-    return
+    return 1
   fi
 
   trap shutdown SIGINT SIGTERM
@@ -35,15 +35,24 @@ prepareBackup() {
 }
 
 backupAndCleanup() {
-  backup
-  cleanup
-  backupPostHook
+  backup && cleanup && backupPostHook
+  local status=$?
   clearLock "$pidfile"
+  return "$status"
 }
 
 backup() {
   local latest_save_index latest_savefile_name backup_file_name
   debug "run backup"
+
+  # Enshrouded 1.0 stores current worlds directly, without a legacy index.
+  if [ -f "$save_dir/world0.ksd" ]; then
+    backupPreHook || return $?
+    backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-world0.zip"
+    info "Backing up save files to $backup_dir/$backup_file_name"
+    zip -j "$backup_dir/$backup_file_name" "$save_dir"/world*.ksd
+    return
+  fi
 
   # parse 3ad85aea-index (json) to get latest save file
   latest_save_index=$(jq -r '.latest' "$save_dir/$savefile_name-index")
@@ -58,10 +67,10 @@ backup() {
   # check if latest save file exists
   if [ ! -f "$save_dir/$latest_savefile_name" ]; then
     warn "Latest save file not found - aborting backup"
-    return
+    return 1
   fi
 
-  backupPreHook
+  backupPreHook || return $?
 
   # create new index file
   cat > /tmp/$savefile_name-index <<EOF
@@ -90,7 +99,7 @@ cleanup() {
   fi
 
   info "Removing old backups with number of backups set to $BACKUP_MAX_COUNT"
-  find "$backup_dir" -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f 2- | head -n -$BACKUP_MAX_COUNT | xargs rm -fv
+  find "$backup_dir" -type f -name '*.zip' -printf '%T@ %p\0' | sort -zn | cut -z -d' ' -f 2- | head -z -n -"$BACKUP_MAX_COUNT" | xargs -0 -r rm -fv --
 }
 
 getSaveDir() {
