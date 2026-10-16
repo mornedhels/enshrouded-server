@@ -9,6 +9,7 @@ SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 15637
 SERVER_IP=${SERVER_IP} # defaults to 0.0.0.0
 SERVER_SAVE_DIR=${SERVER_SAVE_DIR} # defaults to ./savegame
 SERVER_LOG_DIR=${SERVER_LOG_DIR} # defaults to ./logs
+SERVER_TAGS=${SERVER_TAGS}
 
 # Steam Settings
 GAME_BRANCH=${GAME_BRANCH:-public}
