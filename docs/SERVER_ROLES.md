@@ -4,7 +4,14 @@ To configure server roles, you can use the `SERVER_ROLE_<index>_` environment va
 find the corresponding role in the `enshrouded_server.json` file and update the values accordingly.
 You can also just edit the `enshrouded_server.json` file directly.
 
+The game's native fresh configuration includes Admin, Friend, Guest, and Visitor groups with generated passwords.
+This container creates or updates custom groups from the environment variables instead; it does not reproduce those
+native presets or passwords. Existing groups and unspecified permission values are preserved.
+
 ## Environment Variables
+
+The defaults below describe groups newly created by the container, not the game's native role presets.
+`CAN_EDIT_WORLD` is omitted unless explicitly set; the game determines the behavior of an omitted permission.
 
 | Variable                   | Default   | Contraints            | Description                                                                     | WIP | 
 |----------------------------|-----------|-----------------------|---------------------------------------------------------------------------------|:---:|
@@ -13,7 +20,7 @@ You can also just edit the `enshrouded_server.json` file directly.
 |   `PASSWORD`               | `""`      | string                | The password for the server role                                                |     |
 |   `CAN_KICK_BAN`           | `false`   | boolean (true, false) | Permission to kick and ban players                                              |     |
 |   `CAN_ACCESS_INVENTORIES` | `false`   | boolean (true, false) | Permission to access inventories                                                |     |
-|   `CAN_EDIT_WORLD`         | `false`   | boolean (true, false) | Permission to edit world structures                                             | ⚠️  |
+|   `CAN_EDIT_WORLD`         | omitted unless set; game-defined | boolean (true, false) | Permission to edit world structures                              |     |
 |   `CAN_EDIT_BASE`          | `false`   | boolean (true, false) | Permission to edit the base                                                     |     |
 |   `CAN_EXTEND_BASE`        | `false`   | boolean (true, false) | Permission to extend the base                                                   |     |
 |   `RESERVED_SLOTS`         | `0`       | integer               | Number of reserved slots for the server role                                    |     |
@@ -57,17 +64,20 @@ services:
       - SERVER_ROLE_2_PASSWORD=secret3
 ```
 
-Creates the following `enshrouded_server.json` file:
+For a fresh configuration, bootstrap creates the following `enshrouded_server.json` file. The game may add missing
+defaults on startup:
 
 ```json
 {
   "name": "Enshrouded Server",
-  "password": "",
   "saveDirectory": "./savegame",
   "logDirectory": "./logs",
   "ip": "0.0.0.0",
   "queryPort": 15637,
   "slotCount": 16,
+  "voiceChatMode": "Proximity",
+  "enableVoiceChat": false,
+  "enableTextChat": false,
   "userGroups": [
     {
       "name": "Admins",
@@ -94,7 +104,6 @@ Creates the following `enshrouded_server.json` file:
       "password": "secret3",
       "canKickBan": false,
       "canAccessInventories": false,
-      "canEditWorld": false,
       "canEditBase": false,
       "canExtendBase": false,
       "reservedSlots": 0

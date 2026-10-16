@@ -41,6 +41,13 @@ bootstrapHook() {
 }
 
 updateOrCreateEnshroudedServerConfig() {
+  if [[ -n "$SERVER_TAGS" ]]; then
+    if ! jq -e -s 'length == 1 and (.[0] | type == "array" and all(.[]; type == "string"))' \
+      <<< "$SERVER_TAGS" >/dev/null 2>&1; then
+      fatal "SERVER_TAGS must be a JSON array containing only strings"
+    fi
+  fi
+
   if [[ ! -e ${install_path}/enshrouded_server.json ]]; then
     mkdir -p ${install_path}
     touch ${install_path}/enshrouded_server.json
@@ -107,8 +114,28 @@ EOF
     echo "$(jq --argjson enableTextChat "$SERVER_ENABLE_TEXT_CHAT" '.enableTextChat = $enableTextChat' ${install_path}/enshrouded_server.json)" > ${install_path}/enshrouded_server.json
   fi
 
+  updateServerTagsConfig
   updateUserGroupConfig
   updateGameSettingsConfig
+}
+
+updateServerTagsConfig() {
+  if [[ -z "$SERVER_TAGS" ]]; then
+    return
+  fi
+
+  local tags_config_file
+  tags_config_file=$(mktemp "${install_path}/enshrouded_server.json.XXXXXX") ||
+    fatal "Failed to create temporary server config for SERVER_TAGS"
+
+  if jq --argjson tags "$SERVER_TAGS" '.tags = $tags' \
+      "${install_path}/enshrouded_server.json" > "$tags_config_file" &&
+      mv "$tags_config_file" "${install_path}/enshrouded_server.json"; then
+    debug "Updated server tags"
+  else
+    rm -f "$tags_config_file"
+    fatal "Failed to update SERVER_TAGS in enshrouded_server.json"
+  fi
 }
 
 updateUserGroupConfig() {

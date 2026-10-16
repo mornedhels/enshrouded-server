@@ -17,6 +17,7 @@ updates and cleanup.
 |--------------------------------------------------------------------------------------------------------------|:--------:|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|:---:|
 | `SERVER_NAME`                                                                                                |          | `Enshrouded Server` | string                | The name of the server                                                                                             |  ️  |
 | `SERVER_SLOT_COUNT`                                                                                          |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
+| `SERVER_TAGS`                                                                                                |          | `[]`                | JSON array of strings | Server filter tags; unset or empty preserves existing tags, `[]` clears them                                        |     |
 | `SERVER_QUERYPORT`                                                                                           |          | `15637`             | integer               | The steam query port for the server                                                                                |     |
 | `SERVER_IP`                                                                                                  |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                       |     |
 | `SERVER_SAVE_DIR`                                                                                            |          | `./savegame`        | string                | Folder for savegames (relative and absolute paths are supported)                                                   |     |
@@ -29,18 +30,19 @@ updates and cleanup.
 | `UPDATE_CRON`                                                                                                |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                              |     |
 | `UPDATE_CHECK_PLAYERS`                                                                                       |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                    |     |
 | `BACKUP_CRON`                                                                                                |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes |     |
-| `BACKUP_DIR`                                                                                                 |          | `./backups`          | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
+| `BACKUP_DIR`                                                                                                 |          | `./backups`         | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
 | `BACKUP_MAX_COUNT`                                                                                           |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
-| `RESTART_CRON`                                                                                               |          |                     | string (cron format)  | Restart game server cron (eg. `0 3 * * *` restart server daily at 3)                                               | ⚠️  |
-| `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Should the restart check if someone is connected                                                                   | ⚠️  |
+| `RESTART_CRON`                                                                                               |          |                     | string (cron format)  | Restart game server cron (eg. `0 3 * * *` restart server daily at 3)                                               |     |
+| `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Should the restart check if someone is connected                                                                   |     |
 | `GAME_BRANCH`                                                                                                |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`                                                                                              |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 | `SERVER_PASSWORD` ⚠️DEPRECATED                                                                               |          |                     | string                | ⚠️ DEPRECATED: The password for the server (Enshrouded ignores this value - use Server Roles instead)              |     |
 | **[Server Roles](https://github.com/mornedhels/enshrouded-server/blob/main/docs/SERVER_ROLES.md)**           |          |                     |                       | further informations can be found following the link                                                               |     |
-| **[Server Difficulty](https://github.com/mornedhels/enshrouded-server/blob/main/docs/SERVER_DIFFICULTY.md)** |          |                     |                       | further informations can be found following the link                                                               | ⚠️  |
+| **[Server Difficulty](https://github.com/mornedhels/enshrouded-server/blob/main/docs/SERVER_DIFFICULTY.md)** |          |                     |                       | further informations can be found following the link                                                               |     |
 
-All environment Variables prefixed with SERVER, are the available enshrouded_server.json options
-(see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
+The listed `SERVER_` variables map to server configuration fields. Difficulty variables prefixed with `SERVER_GS_`
+are automatically mapped as described in the [difficulty guide](docs/SERVER_DIFFICULTY.md)
+(see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration)).
 
 ⚠️: Work in Progress
 
@@ -50,6 +52,29 @@ All environment Variables prefixed with SERVER, are the available enshrouded_ser
 * Server role configuration can be done via the `enshrouded_server.json` file directly or the `SERVER_ROLE_<index>_XYZ`
   environment vars. The file is located in the `game/server` folder. More information can be found in
   the [official documentation](https://enshrouded.zendesk.com/hc/en-us/articles/19191581489309-Server-Roles-Configuration).
+
+### Server Tags
+
+Set `SERVER_TAGS` to a JSON array of strings to help players find the server using filters in the Join menu:
+
+```yaml
+environment:
+  SERVER_TAGS: '["LookingForPlayers","English","BaseBuilding"]'
+```
+
+The game's default is `[]`. Leaving the variable unset or empty preserves the current `tags` value in
+`enshrouded_server.json`; setting it to `[]` explicitly clears the tags. Invalid JSON or values other than an array
+of strings stop bootstrap with an error without changing the configuration.
+
+Currently documented tags are `LookingForPlayers`, `English`, `German`, `French`, `Italian`, `Japanese`, `Korean`,
+`Polish`, `Portuguese`, `Russian`, `Spanish`, `Thai`, `Turkish`, `Ukrainian`, `Chinese`, `Taiwanese`, `BaseBuilding`,
+`Exploration`, and `Roleplay`. The script validates the array's structure rather than hard-coding this list.
+
+### Bans
+
+Manage bans in-game through the Social tab, or stop the server before manually editing `bannedAccounts` in
+`game/server/enshrouded_server.json`. Preserve the game's existing entries and schema. There is no ban-management
+environment variable.
 
 ### Hooks
 
@@ -175,7 +200,8 @@ volumes:
 
 ## Security Hardening
 
-For information on how to run the Enshrouded server more securely, please refer to the [Security Hardening](docs/SECURITY_HARDENING.md) guide.
+For information on how to run the Enshrouded server more securely, please refer to
+the [Security Hardening](docs/SECURITY_HARDENING.md) guide.
 
 ## Backup
 
