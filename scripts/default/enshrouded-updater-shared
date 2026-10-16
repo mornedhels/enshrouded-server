@@ -96,14 +96,61 @@ except Exception as e:
   return 0
 }
 
+readInstalledBuildId() {
+  [ -r "$1" ] || return 1
+  awk -F '"' -v expected_appid="$steam_app_id" '
+    { sub(/\r$/, "") }
+    /^[[:space:]]*$/ { next }
+    !header {
+      header = 1
+      if ($0 !~ /^[[:space:]]*"AppState"[[:space:]]*$/) invalid = 1
+      next
+    }
+    closed { invalid = 1 }
+    /^[[:space:]]*\{[[:space:]]*$/ { depth++; next }
+    /^[[:space:]]*\}[[:space:]]*$/ {
+      if (--depth < 0) invalid = 1
+      if (depth == 0) closed = 1
+      next
+    }
+    depth < 1 { invalid = 1 }
+    depth == 1 && ($2 == "appid" || $2 == "buildid") {
+      if ($0 !~ /^[[:space:]]*"(appid|buildid)"[[:space:]]+"[0-9]+"[[:space:]]*$/) invalid = 1
+      values[$2] = $4
+      counts[$2]++
+    }
+    END {
+      if (invalid || !closed || depth != 0 ||
+          counts["appid"] != 1 || counts["buildid"] != 1 ||
+          values["appid"] != expected_appid || values["buildid"] !~ /[1-9]/) exit 1
+      print values["buildid"]
+    }
+  ' "$1"
+}
+
 setCurrentVersion() {
-  if [ "$latest_version" == "null" ] || [ "$latest_version" == "-1" ]; then
-    warn "Unable to set current version - latest version is unknown"
-    warn "Next update check will restart the server until version can be determined"
+  local manifest_file
+  local installed_version
+  local temporary_version_file
+  manifest_file="$install_path/$steamapp_path/appmanifest_$steam_app_id.acf"
+
+  if ! installed_version=$(readInstalledBuildId "$manifest_file"); then
+    warn "Unable to set current version - installed Steam manifest is missing, unreadable or invalid: $manifest_file"
     return 1
   fi
-  debug "[setCurrentVersion]: $latest_version"
-  echo "$latest_version" >"$version_file_path"
+
+  if ! temporary_version_file=$(mktemp "$version_file_path.XXXXXX"); then
+    warn "Unable to prepare current version file: $version_file_path"
+    return 1
+  fi
+  if ! printf '%s\n' "$installed_version" >"$temporary_version_file" ||
+    ! mv -fT -- "$temporary_version_file" "$version_file_path"; then
+    warn "Unable to write current version file: $version_file_path"
+    rm -f -- "$temporary_version_file"
+    return 1
+  fi
+  debug "[setCurrentVersion]: $installed_version"
+  return 0
 }
 
 updatePreHook() {
