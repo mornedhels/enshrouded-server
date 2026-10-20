@@ -121,3 +121,44 @@ checkRunning() {
     return 1
   fi
 }
+
+checkServerEmpty() {
+  local connected_players
+  local server_status
+  local status_exit=0
+
+  if [ -n "$STEAM_API_PUBLIC_IP" ] && [ -n "$STEAM_API_KEY" ]; then
+    warn "STEAM_API_PUBLIC_IP and STEAM_API_KEY are deprecated and will be removed in a future release"
+  elif [ "$1" == "false" ]; then
+    return 0
+  fi
+
+  if connected_players=$(python3 - "${SERVER_QUERYPORT:-15637}" <<'PY'
+import sys
+import a2s
+
+print(len(a2s.players(('127.0.0.1', int(sys.argv[1])))))
+PY
+  ); then
+    debug "[checkServerEmpty] connected_players: $connected_players"
+    if [[ "$connected_players" =~ ^[0-9]+$ ]]; then
+      [[ "$connected_players" =~ ^0+$ ]]
+      return $?
+    fi
+    warn "Unable to determine connected players - invalid player count: $connected_players"
+  else
+    warn "Unable to query connected players"
+  fi
+
+  server_status=$(supervisorctl status enshrouded-server 2>&1) || status_exit=$?
+  # Supervisor returns 3 for a known process that is not running.
+  if { [ "$status_exit" -eq 0 ] || [ "$status_exit" -eq 3 ]; } &&
+    [[ "$server_status" != *$'\n'* ]] &&
+    [[ "$server_status" =~ ^enshrouded-server[[:blank:]]+(STOPPED|EXITED|FATAL)([[:blank:]]|$) ]]; then
+    info "Enshrouded server is confirmed stopped - player check not required"
+    return 0
+  fi
+
+  warn "Unable to confirm an empty or stopped Enshrouded server (Supervisor exit status: $status_exit; status: $server_status)"
+  return 1
+}

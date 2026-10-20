@@ -18,8 +18,8 @@ update() {
     fi
     return
   fi
-  if ! checkServerEmpty; then
-    warn "Enshrouded server is not empty - update will not be performed"
+  if ! checkServerEmpty "$UPDATE_CHECK_PLAYERS"; then
+    warn "Enshrouded server is not empty or player status is unknown - update will not be performed"
     return
   fi
 
@@ -67,33 +67,6 @@ verifyCpuMhz() {
     debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
     export CPU_MHZ="1500.000"
   fi
-}
-
-checkServerEmpty() {
-  local connected_players
-
-  if [ -n "$STEAM_API_PUBLIC_IP" ] && [ -n "$STEAM_API_KEY" ]; then
-    warn "STEAM_API_PUBLIC_IP and STEAM_API_KEY are deprecated and will be removed in a future release"
-  else
-    if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
-      return 0
-    fi
-  fi
-
-  connected_players=$(python3 -c "
-try:
-    import a2s
-    print(len(a2s.players(('127.0.0.1',${SERVER_QUERYPORT:-15637}))))
-except Exception as e:
-    print('null')
-")
-
-  debug "[checkServerEmpty] connected_players: $connected_players"
-  if [ -n "$connected_players" ] && [ "$connected_players" != "null" ] && [ "$connected_players" -gt 0 ]; then
-    return 1
-  fi
-
-  return 0
 }
 
 readInstalledBuildId() {
