@@ -35,16 +35,16 @@ doUpdate() {
     supervisorctl stop enshrouded-server
   fi
   verifyCpuMhz
-  if ! downloadEnshrouded; then
-    warn "Download of Enshrouded server failed - retry"
+  if ! downloadEnshrouded || ! verifyInstalledBuild; then
+    warn "Download or build verification of Enshrouded server failed - retry"
     debug "Removing $install_path/$steamapp_path"
-    rm -rf $install_path/$steamapp_path
+    rm -rf -- "$install_path/$steamapp_path"
 
-    if ! downloadEnshrouded; then
-      warn "Download of Enshrouded server failed - aborting update"
+    if ! downloadEnshrouded || ! verifyInstalledBuild; then
+      warn "Download or build verification of Enshrouded server failed - aborting update"
       supervisorctl start enshrouded-server
       clearLock "$pidfile"
-      return
+      return 1
     fi
   fi
   setCurrentVersion
@@ -126,6 +126,28 @@ readInstalledBuildId() {
       print values["buildid"]
     }
   ' "$1"
+}
+
+verifyInstalledBuild() {
+  local manifest_file
+  local installed_version
+  manifest_file="$install_path/$steamapp_path/appmanifest_$steam_app_id.acf"
+
+  if ! installed_version=$(readInstalledBuildId "$manifest_file"); then
+    warn "Unable to verify installed build - installed Steam manifest is missing, unreadable or invalid: $manifest_file"
+    return 1
+  fi
+
+  if [[ "$latest_version" =~ ^[0-9]+$ && "$latest_version" =~ [1-9] ]]; then
+    if [ "$installed_version" != "$latest_version" ]; then
+      warn "Enshrouded build mismatch - expected build $latest_version, installed build $installed_version"
+      return 1
+    fi
+  else
+    warn "Expected Enshrouded build is unavailable - accepting installed build $installed_version without target verification"
+  fi
+
+  return 0
 }
 
 setCurrentVersion() {

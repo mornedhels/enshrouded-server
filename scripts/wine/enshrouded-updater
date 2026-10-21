@@ -5,7 +5,10 @@
 
 main() {
   info "Running enshrouded-updater"
-  update
+  if ! update; then
+    error "enshrouded-updater failed"
+    return 1
+  fi
   info "enshrouded-updater complete"
 }
 
