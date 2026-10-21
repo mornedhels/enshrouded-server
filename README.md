@@ -28,12 +28,12 @@ updates and cleanup.
 | `PUID`                                                                                                       |          | `4711`              | integer               | The UID to run server as (file permission)                                                                         |     |
 | `PGID`                                                                                                       |          | `4711`              | integer               | The GID to run server as (file permission)                                                                         |     |
 | `UPDATE_CRON`                                                                                                |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                              |     |
-| `UPDATE_CHECK_PLAYERS`                                                                                       |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                    |     |
+| `UPDATE_CHECK_PLAYERS`                                                                                       |          | `false`             | boolean (true, false) | Skip updates when players are connected or their status cannot be determined                                       |     |
 | `BACKUP_CRON`                                                                                                |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes |     |
 | `BACKUP_DIR`                                                                                                 |          | `./backups`         | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
 | `BACKUP_MAX_COUNT`                                                                                           |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
 | `RESTART_CRON`                                                                                               |          |                     | string (cron format)  | Restart game server cron (eg. `0 3 * * *` restart server daily at 3)                                               |     |
-| `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Should the restart check if someone is connected                                                                   |     |
+| `RESTART_CHECK_PLAYERS`                                                                                      |          | `false`             | boolean (true, false) | Skip restarts when players are connected or their status cannot be determined                                      |     |
 | `GAME_BRANCH`                                                                                                |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
 | `STEAMCMD_ARGS`                                                                                              |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 | `SERVER_PASSWORD` ⚠️DEPRECATED                                                                               |          |                     | string                | ⚠️ DEPRECATED: The password for the server (Enshrouded ignores this value - use Server Roles instead)              |     |
@@ -49,6 +49,13 @@ are automatically mapped as described in the [difficulty guide](docs/SERVER_DIFF
 ### Additional Information
 
 * During the update process, the container temporarily requires more disk space (up to 2x the game size).
+* When `UPDATE_CHECK_PLAYERS` or `RESTART_CHECK_PLAYERS` is `true`, the corresponding operation requires a successful
+  empty-player check. Query failures (including timeouts or missing Python dependencies) log a warning and defer the
+  operation unless Supervisor explicitly confirms that the game process is stopped (`STOPPED`, `EXITED`, or `FATAL`).
+  This exception allows initial installation and stopped-server updates. Supervisor errors or transitional states
+  do not count as a stopped server. Set the corresponding flag to `false` to disable player protection.
+  If both deprecated variables `STEAM_API_PUBLIC_IP` and `STEAM_API_KEY` are set, the legacy behavior still enables
+  player protection regardless of these flags.
 * Server role configuration can be done via the `enshrouded_server.json` file directly or the `SERVER_ROLE_<index>_XYZ`
   environment vars. The file is located in the `game/server` folder. More information can be found in
   the [official documentation](https://enshrouded.zendesk.com/hc/en-us/articles/19191581489309-Server-Roles-Configuration).
