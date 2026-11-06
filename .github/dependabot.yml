@@ -9,6 +9,8 @@ updates:
     schedule:
       interval: "weekly"
       day: friday
+    cooldown:
+      default-days: 0
 
     # Keep Github Actions up to date
   - package-ecosystem: "github-actions"
